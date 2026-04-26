@@ -4,11 +4,20 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
+import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { FiArrowRight, FiX } from "react-icons/fi";
+import { FiArrowRight, FiMinus, FiPlus, FiTrash2, FiX } from "react-icons/fi";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 
 import { BrandButton } from "@/src/components/ui/brand-button";
+import {
+  formatCartAmount,
+  getCartItemCount,
+  getCartSubtotal,
+  type CartItem,
+  useCartStore,
+} from "@/src/stores/cart-store";
+import { useBrandToastStore } from "@/src/stores/brand-toast-store";
 
 type CartSheetProps = {
   iconClassName?: string;
@@ -21,13 +30,18 @@ function cn(...classes: Array<string | false | null | undefined>) {
 export function CartSheet({ iconClassName }: CartSheetProps) {
   const reducedMotion = Boolean(useReducedMotion());
 
+  const items = useCartStore((state) => state.items);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const pushToast = useBrandToastStore((state) => state.pushToast);
+
   const [open, setOpen] = React.useState(false);
 
   const closeButtonRef = React.useRef<HTMLButtonElement | null>(null);
   const triggerButtonRef = React.useRef<HTMLButtonElement | null>(null);
 
-  const cartCount: number = 0;
-  const subtotal = "₦0.00";
+  const cartCount = getCartItemCount(items);
+  const subtotal = getCartSubtotal(items);
+  const hasItems = items.length > 0;
 
   React.useEffect(() => {
     if (!open) return;
@@ -60,6 +74,25 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
     };
   }, [open]);
 
+  function handleCheckout() {
+    pushToast({
+      variant: "info",
+      title: "Checkout prepared",
+      message:
+        "The checkout action is ready for backend payment integration when the production flow is connected.",
+    });
+  }
+
+  function handleClearCart() {
+    clearCart();
+
+    pushToast({
+      variant: "success",
+      title: "Cart cleared",
+      message: "All selected pieces have been removed from your cart.",
+    });
+  }
+
   const sheet = (
     <AnimatePresence>
       {open ? (
@@ -88,8 +121,8 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
             exit={{ x: "100%" }}
             transition={{ duration: 0.46, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="flex h-dvh flex-col">
-              <div className="border-b border-black/10 px-5 py-4 sm:px-7">
+            <div className="flex h-dvh min-h-0 flex-col">
+              <div className="shrink-0 border-b border-black/10 px-5 py-4 sm:px-7">
                 <div className="flex items-center justify-between gap-5">
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="relative size-10 shrink-0">
@@ -133,58 +166,90 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
                 </div>
               </div>
 
-              <div className="flex flex-1 items-center justify-center overflow-y-auto px-5 py-10 sm:px-7">
-                <motion.div
-                  initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.38,
-                    delay: reducedMotion ? 0 : 0.08,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  className="w-full max-w-[320px] text-center"
-                >
-                  <div className="mx-auto flex size-14 items-center justify-center border border-black/10 bg-white mb-5">
-                    <HiOutlineShoppingBag className="size-6 text-black" />
-                  </div>
+              {hasItems ? (
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 [-webkit-overflow-scrolling:touch] sm:px-7">
+                  <motion.div
+                    initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.38,
+                      delay: reducedMotion ? 0 : 0.08,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="space-y-4"
+                  >
+                    {items.map((item) => (
+                      <CartLineItem
+                        key={item.id}
+                        item={item}
+                        onNavigate={() => setOpen(false)}
+                      />
+                    ))}
 
-                  <p className="mt-6 text-[0.78rem] font-medium uppercase tracking-[0.22em] text-black">
-                    Your cart is empty
-                  </p>
-
-                  <p className="mt-3 text-sm leading-7 text-black/55">
-                    Add pieces to your cart and they will appear here before
-                    checkout.
-                  </p>
-
-                  <div className="mt-7">
-                    <BrandButton
-                      href="/ready-to-wear"
-                      fullWidth
-                      size="md"
-                      variant="primary"
-                      iconAfter={<FiArrowRight className="size-4" />}
-                      onClick={() => setOpen(false)}
+                    <button
+                      type="button"
+                      onClick={handleClearCart}
+                      className="mt-2 inline-flex text-[10px] font-medium uppercase tracking-[0.2em] text-black/42 transition-colors duration-300 ease-luxury hover:text-black"
                     >
-                      Shop ready to wear
-                    </BrandButton>
-                  </div>
-                </motion.div>
-              </div>
+                      Clear cart
+                    </button>
+                  </motion.div>
+                </div>
+              ) : (
+                <div className="flex min-h-0 flex-1 items-center justify-center overflow-y-auto px-5 py-10 sm:px-7">
+                  <motion.div
+                    initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.38,
+                      delay: reducedMotion ? 0 : 0.08,
+                      ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="w-full max-w-80 text-center"
+                  >
+                    <div className="mx-auto mb-5 flex size-14 items-center justify-center border border-black/10 bg-white">
+                      <HiOutlineShoppingBag className="size-6 text-black" />
+                    </div>
 
-              <div className="border-t border-black/10 px-5 py-5 sm:px-7">
+                    <p className="mt-6 text-[0.78rem] font-medium uppercase tracking-[0.22em] text-black">
+                      Your cart is empty
+                    </p>
+
+                    <p className="mt-3 text-sm leading-7 text-black/55">
+                      Add pieces to your cart and they will appear here before
+                      checkout.
+                    </p>
+
+                    <div className="mt-7">
+                      <BrandButton
+                        href="/ready-to-wear"
+                        fullWidth
+                        size="md"
+                        variant="primary"
+                        iconAfter={<FiArrowRight className="size-4" />}
+                        onClick={() => setOpen(false)}
+                      >
+                        Shop ready to wear
+                      </BrandButton>
+                    </div>
+                  </motion.div>
+                </div>
+              )}
+
+              <div className="shrink-0 border-t border-black/10 px-5 py-5 sm:px-7">
                 <div className="flex items-center justify-between gap-5 text-[10px] uppercase tracking-[0.2em] text-black/50">
                   <span>Subtotal</span>
-                  <span className="text-black">{subtotal}</span>
+                  <span className="text-black">{formatCartAmount(subtotal)}</span>
                 </div>
 
                 <BrandButton
                   type="button"
-                  disabled
+                  disabled={!hasItems}
                   fullWidth
                   size="md"
-                  variant="secondary"
+                  variant={hasItems ? "primary" : "secondary"}
                   className="mt-4"
+                  onClick={handleCheckout}
                 >
                   Checkout
                 </BrandButton>
@@ -225,5 +290,111 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
         ? createPortal(sheet, document.body)
         : null}
     </>
+  );
+}
+
+function CartLineItem({
+  item,
+  onNavigate,
+}: {
+  item: CartItem;
+  onNavigate: () => void;
+}) {
+  const incrementItem = useCartStore((state) => state.incrementItem);
+  const decrementItem = useCartStore((state) => state.decrementItem);
+  const removeItem = useCartStore((state) => state.removeItem);
+  const pushToast = useBrandToastStore((state) => state.pushToast);
+
+  function handleRemove() {
+    removeItem(item.id);
+
+    pushToast({
+      variant: "success",
+      title: "Removed from cart",
+      message: `${item.productName} was removed from your cart.`,
+    });
+  }
+
+  return (
+    <article className="border border-black/10 bg-white">
+      <div className="grid grid-cols-[88px_minmax(0,1fr)] gap-4 p-3">
+        <Link
+          href={`/shop/${item.productSlug}`}
+          onClick={onNavigate}
+          className="relative block aspect-3/4 overflow-hidden bg-black/4.5"
+        >
+          {item.image ? (
+            <Image
+              src={item.image.src}
+              alt={item.image.alt}
+              fill
+              sizes="88px"
+              className="object-cover transition-transform duration-700 ease-luxury hover:scale-[1.04]"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center">
+              <HiOutlineShoppingBag className="size-5 text-black/30" />
+            </div>
+          )}
+        </Link>
+
+        <div className="min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <Link
+                href={`/shop/${item.productSlug}`}
+                onClick={onNavigate}
+                className="block truncate text-[11px] font-medium uppercase tracking-[0.18em] text-black transition-colors duration-300 ease-luxury hover:text-black/55"
+              >
+                {item.productName}
+              </Link>
+
+              <p className="mt-2 text-[10px] uppercase tracking-[0.16em] text-black/42">
+                {item.color} / {item.size}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              aria-label={`Remove ${item.productName}`}
+              onClick={handleRemove}
+              className="flex size-8 shrink-0 items-center justify-center text-black/35 transition-colors duration-300 ease-luxury hover:text-black"
+            >
+              <FiTrash2 className="size-4" />
+            </button>
+          </div>
+
+          <div className="mt-5 flex items-center justify-between gap-4">
+            <div className="flex h-9 items-center border border-black/10">
+              <button
+                type="button"
+                aria-label={`Decrease ${item.productName} quantity`}
+                onClick={() => decrementItem(item.id)}
+                className="flex size-9 items-center justify-center text-black/55 transition-colors duration-300 hover:text-black"
+              >
+                <FiMinus className="size-3.5" />
+              </button>
+
+              <span className="flex h-9 min-w-8 items-center justify-center text-[11px] font-medium text-black">
+                {item.quantity}
+              </span>
+
+              <button
+                type="button"
+                aria-label={`Increase ${item.productName} quantity`}
+                onClick={() => incrementItem(item.id)}
+                className="flex size-9 items-center justify-center text-black/55 transition-colors duration-300 hover:text-black"
+              >
+                <FiPlus className="size-3.5" />
+              </button>
+            </div>
+
+            <p className="text-[11px] font-medium uppercase tracking-[0.12em] text-black">
+              {formatCartAmount(item.price.amount * item.quantity)}
+            </p>
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }

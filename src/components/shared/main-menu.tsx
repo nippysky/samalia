@@ -10,6 +10,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   FiArrowRight,
   FiBookOpen,
+  FiChevronDown,
   FiFeather,
   FiHome,
   FiInfo,
@@ -19,6 +20,8 @@ import {
 } from "react-icons/fi";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
 import { LuNotebookText } from "react-icons/lu";
+
+import { readyToWearCategories } from "@/src/data/shop-categories";
 
 type MenuColor = "white" | "dark";
 
@@ -203,6 +206,20 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
                         ? pathname === "/"
                         : Boolean(pathname?.startsWith(item.href));
 
+                    if (item.href === "/ready-to-wear") {
+                      return (
+                        <ReadyToWearMenuGroup
+                          key={item.href}
+                          item={item}
+                          active={active}
+                          index={index}
+                          pathname={pathname}
+                          reducedMotion={reducedMotion}
+                          onNavigate={() => setOpen(false)}
+                        />
+                      );
+                    }
+
                     return (
                       <MenuLink
                         key={item.href}
@@ -253,6 +270,147 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
         ? createPortal(drawer, document.body)
         : null}
     </>
+  );
+}
+
+function ReadyToWearMenuGroup({
+  item,
+  active,
+  index,
+  pathname,
+  reducedMotion,
+  onNavigate,
+}: {
+  item: NavItem;
+  active: boolean;
+  index: number;
+  pathname: string | null;
+  reducedMotion: boolean;
+  onNavigate: () => void;
+}) {
+  const Icon = item.icon;
+  const [expanded, setExpanded] = React.useState(() =>
+    Boolean(pathname?.startsWith("/ready-to-wear"))
+  );
+
+  return (
+    <li>
+      <motion.div
+        initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 8 }}
+        transition={{
+          duration: 0.38,
+          delay: reducedMotion ? 0 : index * 0.028,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+      >
+        <button
+          type="button"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((current) => !current)}
+          className={cn(
+            "group/link relative flex w-full items-center justify-between gap-4 overflow-hidden border px-4 py-4 text-left transition-colors duration-300 ease-luxury",
+            active
+              ? "border-black bg-black text-white"
+              : "border-black/10 bg-white text-black hover:border-black hover:bg-black hover:text-white"
+          )}
+        >
+          <span
+            className={cn(
+              "pointer-events-none absolute inset-y-0 left-0 w-px transition-transform duration-500 ease-luxury",
+              active
+                ? "scale-y-100 bg-white"
+                : "scale-y-0 bg-black group-hover/link:scale-y-100 group-hover/link:bg-white"
+            )}
+          />
+
+          <span className="flex min-w-0 items-center gap-3.5">
+            <span
+              className={cn(
+                "flex size-10 shrink-0 items-center justify-center border transition-colors duration-300 ease-luxury",
+                active
+                  ? "border-white/20 bg-white text-black"
+                  : "border-black/10 bg-black/5 text-black group-hover/link:border-white/20 group-hover/link:bg-white group-hover/link:text-black"
+              )}
+            >
+              <Icon className="size-4.25" />
+            </span>
+
+            <span className="min-w-0">
+              <span
+                className={cn(
+                  "block truncate text-[0.78rem] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
+                  active
+                    ? "text-white"
+                    : "text-black group-hover/link:text-white"
+                )}
+              >
+                {item.label}
+              </span>
+
+              <span
+                className={cn(
+                  "mt-1 block truncate text-[10px] uppercase tracking-[0.16em] transition-colors duration-300",
+                  active
+                    ? "text-white/60"
+                    : "text-black/45 group-hover/link:text-white/65"
+                )}
+              >
+                {item.description}
+              </span>
+            </span>
+          </span>
+
+          <FiChevronDown
+            className={cn(
+              "size-4.25 shrink-0 transition-[color,transform] duration-300 ease-luxury",
+              expanded && "rotate-180",
+              active
+                ? "text-white"
+                : "text-black/35 group-hover/link:text-white"
+            )}
+          />
+        </button>
+
+        <AnimatePresence initial={false}>
+          {expanded ? (
+            <motion.div
+              initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="border-x border-b border-black/10 px-4 py-4">
+                <div className="grid gap-2">
+                  <Link
+                    href="/ready-to-wear"
+                    onClick={onNavigate}
+                    className="flex min-h-10 items-center justify-between border border-black/10 px-3 text-[10px] font-medium uppercase tracking-[0.18em] text-black/65 transition-colors duration-300 ease-luxury hover:border-black hover:bg-black hover:text-white"
+                  >
+                    View all ready to wear
+                    <FiArrowRight className="size-3.5" />
+                  </Link>
+
+                  {readyToWearCategories.map((category) => (
+                    <Link
+                      key={category.slug}
+                      href={`/ready-to-wear/${category.slug}`}
+                      onClick={onNavigate}
+                      className="flex min-h-10 items-center justify-between border border-black/10 px-3 text-[10px] font-medium uppercase tracking-[0.18em] text-black/65 transition-colors duration-300 ease-luxury hover:border-black hover:bg-black hover:text-white"
+                    >
+                      {category.title}
+                      <FiArrowRight className="size-3.5" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </motion.div>
+    </li>
   );
 }
 

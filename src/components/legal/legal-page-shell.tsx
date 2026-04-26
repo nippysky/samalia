@@ -31,7 +31,7 @@ export function LegalPageShell({
   return (
     <main className="bg-white text-black">
       <section className="w-full px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24 2xl:px-10">
-        <div className="mx-auto grid w-full max-w-[1760px] gap-12 lg:grid-cols-[320px_1fr] xl:grid-cols-[380px_1fr]">
+        <div className="mx-auto grid w-full max-w-440 gap-12 lg:grid-cols-[320px_1fr] xl:grid-cols-[380px_1fr]">
           <aside className="lg:sticky lg:top-[calc(var(--nav-h)+32px)] lg:h-fit">
             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-black">
               Legal pages
@@ -58,7 +58,7 @@ export function LegalPageShell({
             </nav>
           </aside>
 
-          <article className="max-w-[860px]">
+          <article className="max-w-215">
             <h1 className="text-[11px] font-semibold uppercase tracking-[0.28em] text-black">
               {title}
             </h1>

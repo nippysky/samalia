@@ -68,7 +68,7 @@ export function SizeGuideModal({ open, onClose }: SizeGuideModalProps) {
             role="dialog"
             aria-modal="true"
             aria-labelledby="size-guide-title"
-            className="relative z-10 w-full max-w-[780px] border border-black/10 bg-white text-black"
+            className="relative z-10 w-full max-w-195 border border-black/10 bg-white text-black"
             initial={reduceMotion ? false : { opacity: 0, y: 18, scale: 0.985 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.985 }}
@@ -101,7 +101,7 @@ export function SizeGuideModal({ open, onClose }: SizeGuideModalProps) {
 
             <div className="px-5 py-6 sm:px-8 sm:py-8">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[560px] border-collapse text-left">
+                <table className="w-full min-w-140 border-collapse text-left">
                   <thead>
                     <tr className="border-b border-black">
                       <th className="py-4 pr-5 text-[10px] font-medium uppercase tracking-[0.22em]">
@@ -140,7 +140,7 @@ export function SizeGuideModal({ open, onClose }: SizeGuideModalProps) {
                 </table>
               </div>
 
-              <p className="mt-6 max-w-[620px] text-sm leading-7 text-black/55">
+              <p className="mt-6 max-w-155 text-sm leading-7 text-black/55">
                 This guide is a reference only. Sam’Alia bespoke appointments
                 include measurement confirmation for a more precise fit.
               </p>

@@ -1,6 +1,34 @@
+/* ============================================================================
+   Sam'Alia · Global Styles
+   ----------------------------------------------------------------------------
+   Architecture
+     1. Tailwind import
+     2. Design tokens               — :root CSS variables
+     3. @theme inline               — Tailwind v4 token bridge
+     4. @layer base                 — resets, element defaults, focus,
+                                      selection, scrollbar, a11y media queries
+     5. @layer components           — design-system primitives (.lux-*)
+     6. @keyframes                  — animation timelines (unlayered, global)
+
+   Cascade order
+     Tailwind preflight (@layer base) → our base (@layer base, last wins) →
+     our components (@layer components) → Tailwind utilities (@layer utilities).
+
+     This means utility classes like `bg-black`, `border-black`, `text-white`
+     ALWAYS win over our base + component styles. No need for inline-style
+     escape hatches — just compose:
+       <button class="bg-black text-white border border-black">…</button>
+   ============================================================================ */
+
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* ============================================================================
+   1. Design tokens
+   ============================================================================ */
 
 :root {
+  /* — Color ————————————————————————————————————————————— */
   --background: #ffffff;
   --foreground: #000000;
   --black: #000000;
@@ -14,16 +42,19 @@
   --inverse-muted: rgba(255, 255, 255, 0.62);
   --inverse-border: rgba(255, 255, 255, 0.18);
 
+  /* — Typography ———————————————————————————————————————— */
   --font-body: var(--font-poppins), Arial, Helvetica, sans-serif;
   --font-heading: var(--font-cinzel), Georgia, serif;
   --font-label: var(--font-poppins), Arial, Helvetica, sans-serif;
 
+  /* — Layout ————————————————————————————————————————————— */
   --container-x: clamp(1rem, 2vw, 2.5rem);
   --container-max: 1760px;
   --nav-h: 76px;
   --section-y: clamp(4.5rem, 10vw, 9rem);
   --section-y-tight: clamp(3rem, 7vw, 6rem);
 
+  /* — Motion ————————————————————————————————————————————— */
   --ease-luxury: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-sharp: cubic-bezier(0.77, 0, 0.175, 1);
   --duration-fast: 180ms;
@@ -31,6 +62,19 @@
   --duration-slow: 700ms;
   --duration-page: 900ms;
 }
+
+/* Mobile token overrides — viewport-conditional, still on :root */
+@media (max-width: 768px) {
+  :root {
+    --nav-h: 68px;
+    --container-x: 1.15rem;
+    --section-y: clamp(3.5rem, 14vw, 6rem);
+  }
+}
+
+/* ============================================================================
+   2. Theme bridge — exposes tokens to Tailwind utility generation
+   ============================================================================ */
 
 @theme inline {
   --color-background: var(--background);
@@ -52,682 +96,693 @@
   --ease-sharp: var(--ease-sharp);
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  border-color: var(--border);
-  border-radius: 0 !important;
-}
-
-html {
-  min-height: 100%;
-  background: var(--white);
-  color: var(--black);
-  scroll-behavior: smooth;
-  text-rendering: geometricPrecision;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  min-height: 100%;
-  margin: 0;
-  overflow-x: hidden;
-  background: var(--white);
-  color: var(--black);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.5;
-  letter-spacing: -0.015em;
-}
-
-main {
-  min-height: 100svh;
-}
-
-::selection {
-  background: var(--black);
-  color: var(--white);
-}
-
-::-moz-selection {
-  background: var(--black);
-  color: var(--white);
-}
-
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
-
-img,
-video {
-  height: auto;
-  object-fit: cover;
-}
-
-button,
-input,
-textarea,
-select {
-  font: inherit;
-  color: inherit;
-}
-
-button {
-  cursor: pointer;
-  border: 0;
-  background: transparent;
-}
-
-button:disabled,
-[aria-disabled="true"] {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-ul,
-ol {
-  margin: 0;
-}
-
-ul,
-ol {
-  padding: 0;
-  list-style: none;
-}
-
-hr {
-  border: 0;
-  border-top: 1px solid var(--border);
-}
-
-:focus {
-  outline: none;
-}
-
-:focus-visible {
-  outline: 1px solid currentColor;
-  outline-offset: 4px;
-}
-
-[id] {
-  scroll-margin-top: calc(var(--nav-h) + 28px);
-}
-
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--white);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--black);
-  border: 3px solid var(--white);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.72);
-}
-
-.lux-page {
-  position: relative;
-  min-height: 100svh;
-  isolation: isolate;
-  background: var(--white);
-  color: var(--black);
-}
-
-.lux-page-inverse,
-.lux-invert {
-  background: var(--black);
-  color: var(--white);
-}
-
-.lux-container {
-  width: 100%;
-  max-width: var(--container-max);
-  margin-inline: auto;
-  padding-inline: var(--container-x);
-}
-
-.lux-bleed {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-}
-
-.lux-section {
-  position: relative;
-  padding-block: var(--section-y);
-}
-
-.lux-section-tight {
-  position: relative;
-  padding-block: var(--section-y-tight);
-}
-
-.lux-hero {
-  position: relative;
-  min-height: 100svh;
-  width: 100%;
-}
-
-.lux-grid {
-  display: grid;
-  gap: clamp(1rem, 2vw, 2rem);
-}
-
-.lux-divider {
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.14;
-}
-
-.lux-border {
-  border: 1px solid var(--border);
-}
-
-.lux-border-strong {
-  border: 1px solid var(--border-strong);
-}
-
-.lux-invert .lux-border,
-.lux-page-inverse .lux-border {
-  border-color: var(--inverse-border);
-}
-
-.lux-display {
-  font-family: var(--font-heading);
-  font-size: clamp(3rem, 10vw, 10rem);
-  font-weight: 500;
-  line-height: 0.88;
-  letter-spacing: -0.065em;
-}
-
-.lux-title {
-  font-family: var(--font-heading);
-  font-size: clamp(2.15rem, 6vw, 6rem);
-  font-weight: 500;
-  line-height: 0.95;
-  letter-spacing: -0.045em;
-}
-
-.lux-heading {
-  font-family: var(--font-heading);
-  font-size: clamp(1.65rem, 3vw, 3.5rem);
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.035em;
-}
-
-.lux-eyebrow,
-.lux-caption,
-.lux-link,
-.lux-button,
-.lux-label {
-  font-family: var(--font-label);
-  text-transform: uppercase;
-}
-
-.lux-eyebrow {
-  font-size: clamp(0.68rem, 0.8vw, 0.78rem);
-  line-height: 1;
-  letter-spacing: 0.18em;
-}
-
-.lux-subheading {
-  font-size: clamp(1rem, 1.4vw, 1.25rem);
-  font-weight: 400;
-  line-height: 1.65;
-  letter-spacing: -0.025em;
-}
-
-.lux-body {
-  font-size: clamp(0.95rem, 1vw, 1.05rem);
-  line-height: 1.8;
-  letter-spacing: -0.015em;
-}
-
-.lux-caption {
-  font-size: 0.76rem;
-  line-height: 1.35;
-  letter-spacing: 0.1em;
-}
-
-.lux-muted {
-  color: var(--muted);
-}
-
-.lux-page-inverse .lux-muted,
-.lux-invert .lux-muted {
-  color: var(--inverse-muted);
-}
-
-.lux-button {
-  position: relative;
-  display: inline-flex;
-  min-height: 48px;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  overflow: hidden;
-  border: 1px solid var(--black);
-  background: var(--black);
-  color: var(--white);
-  padding: 0.9rem 1.35rem;
-  font-size: 0.74rem;
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: 0.13em;
-  transition:
-    color var(--duration-base) var(--ease-luxury),
-    background var(--duration-base) var(--ease-luxury),
-    border-color var(--duration-base) var(--ease-luxury),
-    transform var(--duration-base) var(--ease-luxury);
-}
-
-.lux-button::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: var(--white);
-  transform: translateY(101%);
-  transition: transform var(--duration-base) var(--ease-luxury);
-}
-
-.lux-button > * {
-  position: relative;
-  z-index: 1;
-}
-
-.lux-button:hover {
-  color: var(--black);
-  transform: translateY(-1px);
-}
-
-.lux-button:hover::before {
-  transform: translateY(0);
-}
-
-.lux-button:active {
-  transform: translateY(0);
-}
-
-.lux-button-outline {
-  background: transparent;
-  color: var(--black);
-}
-
-.lux-button-outline::before {
-  background: var(--black);
-}
-
-.lux-button-outline:hover {
-  color: var(--white);
-}
-
-.lux-button-inverse {
-  border-color: var(--white);
-  background: var(--white);
-  color: var(--black);
-}
-
-.lux-button-inverse::before {
-  background: var(--black);
-}
-
-.lux-button-inverse:hover {
-  color: var(--white);
-}
-
-.lux-link {
-  position: relative;
-  display: inline-flex;
-  width: fit-content;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.76rem;
-  letter-spacing: 0.13em;
-}
-
-.lux-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -0.35rem;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(1);
-  transform-origin: left;
-  transition: transform var(--duration-base) var(--ease-luxury);
-}
-
-.lux-link:hover::after {
-  transform: scaleX(0);
-  transform-origin: right;
-}
-
-.lux-media {
-  position: relative;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.04);
-}
-
-.lux-media img,
-.lux-media video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.001);
-  transition:
-    transform var(--duration-slow) var(--ease-luxury),
-    filter var(--duration-slow) var(--ease-luxury);
-}
-
-.lux-media:hover img,
-.lux-media:hover video {
-  transform: scale(1.045);
-}
-
-.lux-media-muted img,
-.lux-media-muted video {
-  filter: grayscale(1) contrast(1.04);
-}
-
-.lux-media-muted:hover img,
-.lux-media-muted:hover video {
-  filter: grayscale(0) contrast(1);
-}
-
-.lux-panel {
-  position: relative;
-  border: 1px solid var(--border);
-  background: var(--white);
-  color: var(--black);
-  transition:
-    border-color var(--duration-base) var(--ease-luxury),
-    transform var(--duration-base) var(--ease-luxury);
-}
-
-.lux-panel:hover {
-  border-color: var(--black);
-  transform: translateY(-2px);
-}
-
-.lux-panel-inverse {
-  border-color: var(--inverse-border);
-  background: var(--black);
-  color: var(--white);
-}
-
-.lux-panel-inverse:hover {
-  border-color: var(--white);
-}
-
-.lux-field {
-  width: 100%;
-  border: 0;
-  border-bottom: 1px solid var(--border-strong);
-  background: transparent;
-  color: currentColor;
-  padding: 1rem 0;
-  font-size: 1rem;
-  line-height: 1.4;
-  transition: border-color var(--duration-base) var(--ease-luxury);
-}
-
-.lux-field::placeholder {
-  color: var(--muted-soft);
-}
-
-.lux-field:focus {
-  border-color: currentColor;
-}
-
-textarea.lux-field {
-  min-height: 140px;
-  resize: vertical;
-}
-
-.lux-label {
-  display: inline-flex;
-  margin-bottom: 0.7rem;
-  font-size: 0.7rem;
-  letter-spacing: 0.14em;
-}
-
-.lux-fade-in {
-  animation: luxFadeIn var(--duration-page) var(--ease-luxury) both;
-}
-
-.lux-rise-in {
-  animation: luxRiseIn var(--duration-page) var(--ease-luxury) both;
-}
-
-.lux-slide-left {
-  animation: luxSlideLeft var(--duration-page) var(--ease-luxury) both;
-}
-
-.lux-scale-in {
-  animation: luxScaleIn var(--duration-slow) var(--ease-luxury) both;
-}
-
-.lux-reveal-line {
-  overflow: hidden;
-}
-
-.lux-reveal-line > * {
-  display: block;
-  animation: luxTextReveal var(--duration-page) var(--ease-luxury) both;
-}
-
-.lux-stagger > * {
-  animation: luxRiseIn var(--duration-page) var(--ease-luxury) both;
-}
-
-.lux-stagger > *:nth-child(1) {
-  animation-delay: 60ms;
-}
-
-.lux-stagger > *:nth-child(2) {
-  animation-delay: 120ms;
-}
-
-.lux-stagger > *:nth-child(3) {
-  animation-delay: 180ms;
-}
-
-.lux-stagger > *:nth-child(4) {
-  animation-delay: 240ms;
-}
-
-.lux-stagger > *:nth-child(5) {
-  animation-delay: 300ms;
-}
-
-.lux-stagger > *:nth-child(6) {
-  animation-delay: 360ms;
-}
-
-.lux-marquee {
-  display: flex;
-  width: max-content;
-  animation: luxMarquee 28s linear infinite;
-  will-change: transform;
-}
-
-.lux-marquee:hover {
-  animation-play-state: paused;
-}
-
-.lux-hover-lift {
-  transition:
-    transform var(--duration-base) var(--ease-luxury),
-    opacity var(--duration-base) var(--ease-luxury);
-}
-
-.lux-hover-lift:hover {
-  transform: translateY(-4px);
-}
-
-.lux-hover-line {
-  position: relative;
-}
-
-.lux-hover-line::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -0.18em;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: right;
-  transition: transform var(--duration-base) var(--ease-luxury);
-}
-
-.lux-hover-line:hover::after {
-  transform: scaleX(1);
-  transform-origin: left;
-}
-
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity var(--duration-page) var(--ease-luxury),
-    transform var(--duration-page) var(--ease-luxury);
-}
-
-[data-reveal="visible"] {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-@keyframes luxFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes luxRiseIn {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes luxSlideLeft {
-  from {
-    opacity: 0;
-    transform: translateX(28px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes luxScaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.975);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes luxTextReveal {
-  from {
-    transform: translateY(110%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-@keyframes luxMarquee {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@media (max-width: 768px) {
-  :root {
-    --nav-h: 68px;
-    --container-x: 1.15rem;
-    --section-y: clamp(3.5rem, 14vw, 6rem);
-  }
-
-  body {
-    font-size: 15px;
-  }
-
-  .lux-button {
-    width: 100%;
-    min-height: 52px;
-  }
-
-  .lux-display {
-    letter-spacing: -0.055em;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
+/* ============================================================================
+   3. Base — resets, element defaults, document chrome
+   ----------------------------------------------------------------------------
+   Lives in @layer base so Tailwind utilities can override anything here
+   without inline-style workarounds.
+   ============================================================================ */
+
+@layer base {
+  /* — Universal ————————————————————————————————————————— */
   *,
   *::before,
   *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 1ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 1ms !important;
+    border-color: var(--border);
+    border-radius: 0;
+  }
+
+  /* — Document ————————————————————————————————————————— */
+  html {
+    min-height: 100%;
+    background: var(--white);
+    color: var(--black);
+    scroll-behavior: smooth;
+    text-rendering: geometricPrecision;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    min-height: 100%;
+    overflow-x: hidden;
+    background: var(--white);
+    color: var(--black);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: -0.015em;
+  }
+
+  main {
+    min-height: 100svh;
+  }
+
+  /* — Form elements ——————————————————————————————————————— */
+  /*
+    Tailwind preflight already handles:
+      - font: inherit, color: inherit
+      - background: transparent
+      - border: 0 solid (so `border` utility works correctly)
+      - border-radius: 0
+    We only add what's missing:
+      - cursor: pointer for buttons
+      - appearance: none to strip OS-level button rendering
+        (otherwise <button> text renders slightly differently from <a> text)
+  */
+  button {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+
+  /* — Anchors ————————————————————————————————————————————— */
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* — Typography reset ————————————————————————————————————— */
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  ul,
+  ol {
+    margin: 0;
+  }
+
+  ul,
+  ol {
+    list-style: none;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  /* — Media defaults ——————————————————————————————————————— */
+  img,
+  video {
+    object-fit: cover;
+  }
+
+  /* — Focus ————————————————————————————————————————————— */
+  :focus {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 1px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  /* Anchored scroll offset to clear the fixed nav */
+  [id] {
+    scroll-margin-top: calc(var(--nav-h) + 28px);
+  }
+
+  /* — Selection ————————————————————————————————————————— */
+  ::selection {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  ::-moz-selection {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  /* — Scrollbar (webkit) ————————————————————————————————————— */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--white);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--black);
+    border: 3px solid var(--white);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.72);
+  }
+
+  /* — Mobile body override ————————————————————————————————— */
+  @media (max-width: 768px) {
+    body {
+      font-size: 15px;
+    }
+  }
+
+  /* — Reduced motion (accessibility) ————————————————————————
+     `!important` is justified here — accessibility preferences must win
+     over any animation, including ones added via utility classes. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 1ms !important;
+    }
   }
 }
 
-@media (hover: none) {
-  .lux-media:hover img,
-  .lux-media:hover video,
-  .lux-hover-lift:hover,
-  .lux-panel:hover {
-    transform: none;
+/* ============================================================================
+   4. Components — design-system primitives (.lux-*)
+   ----------------------------------------------------------------------------
+   Reusable patterns. Tailwind utilities still win over these, so consumers
+   can compose: <div class="lux-panel bg-black/5">
+   ============================================================================ */
+
+@layer components {
+  /* ────────────────────────────────────────────────────────────
+     Layout primitives
+     ──────────────────────────────────────────────────────────── */
+
+  .lux-page {
+    position: relative;
+    min-height: 100svh;
+    isolation: isolate;
+    background: var(--white);
+    color: var(--black);
   }
+
+  .lux-page-inverse,
+  .lux-invert {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .lux-container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--container-x);
+  }
+
+  .lux-bleed {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .lux-section {
+    position: relative;
+    padding-block: var(--section-y);
+  }
+
+  .lux-section-tight {
+    position: relative;
+    padding-block: var(--section-y-tight);
+  }
+
+  .lux-hero {
+    position: relative;
+    min-height: 100svh;
+    width: 100%;
+  }
+
+  .lux-grid {
+    display: grid;
+    gap: clamp(1rem, 2vw, 2rem);
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     Decoration
+     ──────────────────────────────────────────────────────────── */
+
+  .lux-divider {
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.14;
+  }
+
+  .lux-border {
+    border: 1px solid var(--border);
+  }
+
+  .lux-border-strong {
+    border: 1px solid var(--border-strong);
+  }
+
+  .lux-invert .lux-border,
+  .lux-page-inverse .lux-border {
+    border-color: var(--inverse-border);
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     Typography
+     ──────────────────────────────────────────────────────────── */
+
+  .lux-display {
+    font-family: var(--font-heading);
+    font-size: clamp(3rem, 10vw, 10rem);
+    font-weight: 500;
+    line-height: 0.88;
+    letter-spacing: -0.065em;
+  }
+
+  .lux-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.15rem, 6vw, 6rem);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+  }
+
+  .lux-heading {
+    font-family: var(--font-heading);
+    font-size: clamp(1.65rem, 3vw, 3.5rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  .lux-subheading {
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    font-weight: 400;
+    line-height: 1.65;
+    letter-spacing: -0.025em;
+  }
+
+  .lux-body {
+    font-size: clamp(0.95rem, 1vw, 1.05rem);
+    line-height: 1.8;
+    letter-spacing: -0.015em;
+  }
+
+  /* Uppercase-tracked label family */
+  .lux-eyebrow,
+  .lux-caption,
+  .lux-link,
+  .lux-button,
+  .lux-label {
+    font-family: var(--font-label);
+    text-transform: uppercase;
+  }
+
+  .lux-eyebrow {
+    font-size: clamp(0.68rem, 0.8vw, 0.78rem);
+    line-height: 1;
+    letter-spacing: 0.18em;
+  }
+
+  .lux-caption {
+    font-size: 0.76rem;
+    line-height: 1.35;
+    letter-spacing: 0.1em;
+  }
+
+  .lux-label {
+    display: inline-flex;
+    margin-bottom: 0.7rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+  }
+
+  .lux-muted {
+    color: var(--muted);
+  }
+
+  .lux-page-inverse .lux-muted,
+  .lux-invert .lux-muted {
+    color: var(--inverse-muted);
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     UI components
+     ──────────────────────────────────────────────────────────── */
+
+  /* Button with sliding-overlay hover (white slides up over black) */
+  .lux-button {
+    position: relative;
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    overflow: hidden;
+    border: 1px solid var(--black);
+    background: var(--black);
+    color: var(--white);
+    padding: 0.9rem 1.35rem;
+    font-size: 0.74rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.13em;
+    transition:
+      color var(--duration-base) var(--ease-luxury),
+      background var(--duration-base) var(--ease-luxury),
+      border-color var(--duration-base) var(--ease-luxury),
+      transform var(--duration-base) var(--ease-luxury);
+  }
+
+  .lux-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: var(--white);
+    transform: translateY(101%);
+    transition: transform var(--duration-base) var(--ease-luxury);
+  }
+
+  .lux-button > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .lux-button:hover {
+    color: var(--black);
+    transform: translateY(-1px);
+  }
+
+  .lux-button:hover::before {
+    transform: translateY(0);
+  }
+
+  .lux-button:active {
+    transform: translateY(0);
+  }
+
+  .lux-button-outline {
+    background: transparent;
+    color: var(--black);
+  }
+
+  .lux-button-outline::before {
+    background: var(--black);
+  }
+
+  .lux-button-outline:hover {
+    color: var(--white);
+  }
+
+  .lux-button-inverse {
+    border-color: var(--white);
+    background: var(--white);
+    color: var(--black);
+  }
+
+  .lux-button-inverse::before {
+    background: var(--black);
+  }
+
+  .lux-button-inverse:hover {
+    color: var(--white);
+  }
+
+  /* Link with retracting underline on hover */
+  .lux-link {
+    position: relative;
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.76rem;
+    letter-spacing: 0.13em;
+  }
+
+  .lux-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.35rem;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(1);
+    transform-origin: left;
+    transition: transform var(--duration-base) var(--ease-luxury);
+  }
+
+  .lux-link:hover::after {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+
+  /* Form field with bottom-border focus state */
+  .lux-field {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--border-strong);
+    background: transparent;
+    color: currentColor;
+    padding: 1rem 0;
+    font-size: 1rem;
+    line-height: 1.4;
+    transition: border-color var(--duration-base) var(--ease-luxury);
+  }
+
+  .lux-field::placeholder {
+    color: var(--muted-soft);
+  }
+
+  .lux-field:focus {
+    border-color: currentColor;
+  }
+
+  textarea.lux-field {
+    min-height: 140px;
+    resize: vertical;
+  }
+
+  /* Media wrapper — image/video with grayscale + scale on hover */
+  .lux-media {
+    position: relative;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  .lux-media img,
+  .lux-media video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.001);
+    transition:
+      transform var(--duration-slow) var(--ease-luxury),
+      filter var(--duration-slow) var(--ease-luxury);
+  }
+
+  .lux-media:hover img,
+  .lux-media:hover video {
+    transform: scale(1.045);
+  }
+
+  .lux-media-muted img,
+  .lux-media-muted video {
+    filter: grayscale(1) contrast(1.04);
+  }
+
+  .lux-media-muted:hover img,
+  .lux-media-muted:hover video {
+    filter: grayscale(0) contrast(1);
+  }
+
+  /* Panel/card with hover lift */
+  .lux-panel {
+    position: relative;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--black);
+    transition:
+      border-color var(--duration-base) var(--ease-luxury),
+      transform var(--duration-base) var(--ease-luxury);
+  }
+
+  .lux-panel:hover {
+    border-color: var(--black);
+    transform: translateY(-2px);
+  }
+
+  .lux-panel-inverse {
+    border-color: var(--inverse-border);
+    background: var(--black);
+    color: var(--white);
+  }
+
+  .lux-panel-inverse:hover {
+    border-color: var(--white);
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     Animations — apply via class
+     ──────────────────────────────────────────────────────────── */
+
+  .lux-fade-in {
+    animation: luxFadeIn var(--duration-page) var(--ease-luxury) both;
+  }
+
+  .lux-rise-in {
+    animation: luxRiseIn var(--duration-page) var(--ease-luxury) both;
+  }
+
+  .lux-slide-left {
+    animation: luxSlideLeft var(--duration-page) var(--ease-luxury) both;
+  }
+
+  .lux-scale-in {
+    animation: luxScaleIn var(--duration-slow) var(--ease-luxury) both;
+  }
+
+  .lux-reveal-line {
+    overflow: hidden;
+  }
+
+  .lux-reveal-line > * {
+    display: block;
+    animation: luxTextReveal var(--duration-page) var(--ease-luxury) both;
+  }
+
+  .lux-stagger > * {
+    animation: luxRiseIn var(--duration-page) var(--ease-luxury) both;
+  }
+
+  .lux-stagger > *:nth-child(1) { animation-delay: 60ms; }
+  .lux-stagger > *:nth-child(2) { animation-delay: 120ms; }
+  .lux-stagger > *:nth-child(3) { animation-delay: 180ms; }
+  .lux-stagger > *:nth-child(4) { animation-delay: 240ms; }
+  .lux-stagger > *:nth-child(5) { animation-delay: 300ms; }
+  .lux-stagger > *:nth-child(6) { animation-delay: 360ms; }
+
+  .lux-marquee {
+    display: flex;
+    width: max-content;
+    animation: luxMarquee 28s linear infinite;
+    will-change: transform;
+  }
+
+  .lux-marquee:hover {
+    animation-play-state: paused;
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     Hover effects
+     ──────────────────────────────────────────────────────────── */
+
+  .lux-hover-lift {
+    transition:
+      transform var(--duration-base) var(--ease-luxury),
+      opacity var(--duration-base) var(--ease-luxury);
+  }
+
+  .lux-hover-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  .lux-hover-line {
+    position: relative;
+  }
+
+  .lux-hover-line::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -0.18em;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--duration-base) var(--ease-luxury);
+  }
+
+  .lux-hover-line:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Scroll-triggered reveal — paired with IntersectionObserver */
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity var(--duration-page) var(--ease-luxury),
+      transform var(--duration-page) var(--ease-luxury);
+  }
+
+  [data-reveal="visible"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ────────────────────────────────────────────────────────────
+     Mobile component overrides
+     ──────────────────────────────────────────────────────────── */
+
+  @media (max-width: 768px) {
+    .lux-button {
+      width: 100%;
+      min-height: 52px;
+    }
+
+    .lux-display {
+      letter-spacing: -0.055em;
+    }
+  }
+
+  /* Touch / no-hover devices — disable hover transforms */
+  @media (hover: none) {
+    .lux-media:hover img,
+    .lux-media:hover video,
+    .lux-hover-lift:hover,
+    .lux-panel:hover {
+      transform: none;
+    }
+  }
+}
+
+/* ============================================================================
+   5. Keyframes — global, unlayered
+   ============================================================================ */
+
+@keyframes luxFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes luxRiseIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes luxSlideLeft {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes luxScaleIn {
+  from { opacity: 0; transform: scale(0.975); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes luxTextReveal {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
+}
+
+@keyframes luxMarquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 @keyframes luxRouteIn {
@@ -736,7 +791,6 @@ textarea.lux-field {
     transform: translateY(10px);
     filter: blur(6px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);

@@ -49,6 +49,7 @@ function FeatureLinkCard({
             <Image
               src={item.imageSrc}
               alt={item.imageAlt}
+              loading="eager"
               fill
               sizes="(max-width: 640px) 78vw, (max-width: 1024px) 29vw, 380px"
               className="object-cover transition-transform duration-700 ease-luxury group-hover:scale-[1.035]"

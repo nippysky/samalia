@@ -41,8 +41,8 @@ export function HomeHero({
   imageSrc,
   imageAlt,
   imagePosition,
-  ctaLabel = "Bespoke service",
-  ctaHref = "/bespoke-services",
+  ctaLabel = "Lookbook",
+  ctaHref = "/lookbook",
 }: HomeHeroProps) {
   const resolvedImageSrc = hero?.imageSrc ?? imageSrc ?? "/images/home-hero.jpeg";
 

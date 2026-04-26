@@ -20,7 +20,7 @@ const homeFeatureLinks: HomeFeatureLink[] = [
     imagePosition: "center",
   },
   {
-    title: "Elevated everyday",
+    title: "Bespoke Services",
     href: "/bespoke-services",
     imageSrc: "/images/elevated-daily.jpeg",
     imageAlt: "Sam’Alia elevated everyday editorial",

@@ -4,9 +4,11 @@ import { Cinzel, Poppins } from "next/font/google";
 import Script from "next/script";
 
 import "./globals.css";
+import { BrandToastViewport } from "@/src/components/shared/brand-toast-viewport";
 import { CookieConsent } from "@/src/components/shared/cookie-consent";
 import { SiteFooter } from "@/src/components/shared/site-footer";
 import { SiteHeader } from "@/src/components/shared/site-header";
+import { QueryProvider } from "@/src/providers/query-provider";
 
 const cinzel = Cinzel({
   subsets: ["latin"],
@@ -155,6 +157,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${cinzel.variable} ${poppins.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-svh w-full overflow-x-hidden bg-background text-foreground font-sans">
@@ -176,13 +179,16 @@ export default function RootLayout({
           }}
         />
 
-        <div className="flex min-h-svh flex-col">
-          <SiteHeader />
-          <main className="flex-1">{children}</main>
-          <SiteFooter />
-        </div>
+        <QueryProvider>
+          <div className="flex min-h-svh flex-col">
+            <SiteHeader />
+            <main className="flex-1">{children}</main>
+            <SiteFooter />
+          </div>
 
-        <CookieConsent />
+          <CookieConsent />
+          <BrandToastViewport />
+        </QueryProvider>
       </body>
     </html>
   );

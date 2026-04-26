@@ -5,6 +5,7 @@ import * as React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { FiArrowRight, FiMinus, FiPlus } from "react-icons/fi";
+import { LuRuler } from "react-icons/lu";
 
 import { BrandButton } from "@/src/components/ui/brand-button";
 import { CookiePreferencesModal } from "@/src/components/shared/cookie-preferences-modal";
@@ -38,16 +39,19 @@ const footerSections: FooterSection[] = [
     title: "Explore",
     links: [
       { label: "Ready to wear", href: "/ready-to-wear" },
-      { label: "Elevated everyday", href: "/elevated-everyday" },
+      { label: "Look Book", href: "/look-book" },
       { label: "Craft & legacy", href: "/craft-legacy" },
-      { label: "Bespoke service", href: "/bespoke-services" },
     ],
   },
   {
     title: "Service",
+    // Size guide intentionally lives in the brand block, not here —
+    // having it inline as a <button> made it read heavier than the <a>
+    // links beside it (browser button rendering quirks). It's a more
+    // distinct action anyway, so a dedicated CTA fits better.
     links: [
       { label: "Book appointment", href: "/bespoke-services" },
-      { label: "Size guide", action: "size-guide" },
+      { label: "Certificate of Craft", href: "/certificate-of-craft" },
       { label: "Contact", href: "/contact" },
     ],
   },
@@ -91,11 +95,14 @@ function FooterTextLink({
   link: FooterLink;
   onAction: (action: FooterAction) => void;
 }) {
+  // All link rows now resolve to <a> elements (since Size guide is gone),
+  // so no more button/anchor weight discrepancy. Kept the explicit normalisations
+  // anyway as a safety net for any future <button>-rendered link.
   const className =
-    "group/link inline-flex w-fit items-center gap-2 whitespace-nowrap text-sm leading-7 text-black/62 transition-colors duration-300 ease-luxury hover:text-black";
+    "group/link inline-flex w-fit appearance-none items-center gap-1.5 whitespace-nowrap p-0 font-sans text-[13px] font-normal leading-6 text-black/55 transition-colors duration-300 ease-luxury hover:text-black";
 
   const icon = (
-    <FiArrowRight className="size-3 opacity-0 transition-[opacity,transform] duration-300 ease-luxury group-hover/link:translate-x-0.5 group-hover/link:opacity-100" />
+    <FiArrowRight className="size-2.5 -translate-x-1 opacity-0 transition-[opacity,transform] duration-300 ease-luxury group-hover/link:translate-x-0 group-hover/link:opacity-100" />
   );
 
   if (isFooterActionLink(link)) {
@@ -135,7 +142,7 @@ function FooterTextLink({
 
 function FooterSectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-[11px] font-semibold uppercase tracking-[0.38em] text-black">
+    <h3 className="text-[10px] font-semibold uppercase tracking-[0.34em] text-black">
       {children}
     </h3>
   );
@@ -152,8 +159,8 @@ function DesktopFooterSection({
     <div className="min-w-0">
       <FooterSectionTitle>{section.title}</FooterSectionTitle>
 
-      <div className="pt-5">
-        <ul className="space-y-6">
+      <div className="pt-6">
+        <ul className="space-y-3.5">
           {section.links.map((link) => (
             <li key={`${section.title}-${link.label}`}>
               <FooterTextLink link={link} onAction={onAction} />
@@ -188,7 +195,11 @@ function MobileFooterAccordion({
         <FooterSectionTitle>{section.title}</FooterSectionTitle>
 
         <span className="flex size-8 shrink-0 items-center justify-center text-black">
-          {open ? <FiMinus className="size-4" /> : <FiPlus className="size-4" />}
+          {open ? (
+            <FiMinus className="size-3.5" />
+          ) : (
+            <FiPlus className="size-3.5" />
+          )}
         </span>
       </button>
 
@@ -202,7 +213,7 @@ function MobileFooterAccordion({
             transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <ul className="space-y-5 pb-9 pt-8">
+            <ul className="space-y-3.5 pb-8 pt-6">
               {section.links.map((link) => (
                 <li key={`${section.title}-${link.label}`}>
                   <FooterTextLink link={link} onAction={onAction} />
@@ -227,17 +238,17 @@ function NewsletterBlock({ compact = false }: { compact?: boolean }) {
     <div className="min-w-0">
       <FooterSectionTitle>Private list</FooterSectionTitle>
 
-      <div className={compact ? "pt-10" : "pt-5"}>
+      <div className={compact ? "pt-8" : "pt-6"}>
         <p
-          className={`text-sm leading-8 text-black/58 ${
-            compact ? "max-w-none" : "max-w-115"
+          className={`text-[13px] leading-[1.75] text-black/55 ${
+            compact ? "max-w-none" : "max-w-full"
           }`}
         >
           Receive collection notes, private appointments, and new releases from
-          Sam’Alia.
+          Sam&apos;Alia.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-10">
+        <form onSubmit={handleSubmit} className="mt-8">
           <div className="border-b border-black/20 transition-colors duration-300 ease-luxury focus-within:border-black">
             <label
               htmlFor={compact ? "footer-email-mobile" : "footer-email"}
@@ -252,17 +263,35 @@ function NewsletterBlock({ compact = false }: { compact?: boolean }) {
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               placeholder="Email address"
-              className="h-12 w-full bg-transparent text-sm text-black outline-none placeholder:text-black/35"
+              className="h-11 w-full bg-transparent text-[13px] text-black outline-none placeholder:text-black/35"
             />
           </div>
 
-          <div className="mt-8">
+          <div className="mt-7">
+            {/*
+              Primary BrandButton.
+
+              Inline `background` + `border` shorthand are required because
+              globals.css has unlayered rules that beat Tailwind utilities:
+                - the * reset / button reset can override `bg-black`
+                - `button { border: 0 }` resets border-width to 0 AND
+                  border-style to none, so even setting borderColor alone
+                  doesn't paint anything (no width, no style → no border)
+
+              Using `border: '1px solid var(--black)'` shorthand sets all
+              three border properties at once, inline, so the cascade can't
+              touch any of them. The black edge becomes visible during the
+              white-overlay hover state, defining the button shape.
+            */}
             <BrandButton
-              type="submit"
               variant="primary"
               size="md"
               iconAfter={<FiArrowRight className="size-3.5" />}
-              className="min-w-47.5"
+              className="w-full lg:w-auto lg:min-w-44"
+              style={{
+                backgroundColor: "var(--black)",
+                border: "1px solid var(--black)",
+              }}
             >
               Join the list
             </BrandButton>
@@ -273,18 +302,41 @@ function NewsletterBlock({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function FooterBrandNote() {
+function FooterBrandNote({
+  onAction,
+}: {
+  onAction: (action: FooterAction) => void;
+}) {
   return (
-    <div className="min-w-0 max-w-107.5">
-      <FooterSectionTitle>Sam’Alia</FooterSectionTitle>
+    <div className="min-w-0">
+      <FooterSectionTitle>Sam&apos;Alia</FooterSectionTitle>
 
-      <div className="pt-5">
-        <p className="max-w-92.5 text-sm leading-8 text-black/58">
+      <div className="pt-6">
+        <p className="text-[13px] leading-[1.75] text-black/55">
           Luxury fashion and lifestyle shaped by heritage, restraint, and modern
           presence.
         </p>
 
-        <div className="mt-14 h-px w-24 bg-black" />
+        {/*
+          Size guide CTA — moved here from the Service column.
+          Uses BrandButton's `text` variant: uppercase, tracked, with the
+          underline-grow hover animation. The ruler icon nudges left on hover
+          (built into BrandButton's iconBefore animation). Sits as a refined
+          editorial action under the brand statement, separate from the link
+          lists so its different visual weight reads as intentional.
+        */}
+        <div className="mt-6">
+          <BrandButton
+            variant="text"
+            size="sm"
+            iconBefore={<LuRuler className="size-3.5" />}
+            onClick={() => onAction("size-guide")}
+          >
+            Size guide
+          </BrandButton>
+        </div>
+
+        <div className="mt-10 h-px w-20 bg-black" />
       </div>
     </div>
   );
@@ -310,8 +362,9 @@ export function SiteFooter() {
       <footer className="border-t border-black/10 bg-white text-black">
         <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-10">
           <div className="mx-auto w-full max-w-440">
-            <div className="hidden py-24 lg:grid lg:grid-cols-[minmax(270px,1.15fr)_minmax(170px,0.65fr)_minmax(170px,0.65fr)_minmax(150px,0.55fr)_minmax(380px,1.2fr)] lg:gap-16 xl:gap-24 2xl:gap-28">
-              <FooterBrandNote />
+            {/* Desktop grid (lg+) */}
+            <div className="hidden py-20 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.65fr)_minmax(0,0.65fr)_minmax(0,0.55fr)_minmax(0,1.2fr)] lg:gap-10 xl:gap-16 2xl:gap-24">
+              <FooterBrandNote onAction={handleAction} />
 
               {footerSections.map((section) => (
                 <DesktopFooterSection
@@ -324,9 +377,10 @@ export function SiteFooter() {
               <NewsletterBlock />
             </div>
 
-            <div className="py-12 lg:hidden">
-              <div className="border-b border-black/10 pb-9">
-                <FooterBrandNote />
+            {/* Mobile / tablet accordion (below lg) */}
+            <div className="py-10 lg:hidden">
+              <div className="border-b border-black/10 pb-8">
+                <FooterBrandNote onAction={handleAction} />
               </div>
 
               <div>
@@ -338,27 +392,28 @@ export function SiteFooter() {
                   />
                 ))}
 
-                <div className="border-b border-black/10 py-9">
+                <div className="border-b border-black/10 py-8">
                   <NewsletterBlock compact />
                 </div>
               </div>
             </div>
 
-            <div className="border-t border-black/10 py-6">
-              <div className="flex flex-col gap-5 text-[11px] tracking-[0.12em] text-black/42 sm:flex-row sm:items-center sm:justify-between">
+            {/* Legal bar */}
+            <div className="border-t border-black/10 py-5">
+              <div className="flex flex-col gap-4 text-[10px] tracking-[0.12em] text-black/40 sm:flex-row sm:items-center sm:justify-between">
                 <p className="uppercase tracking-[0.2em]">
-                  © {year} Sam’Alia. All rights reserved.
+                  © {year} Sam&apos;Alia. All rights reserved.
                 </p>
 
                 <nav aria-label="Legal links">
-                  <ul className="flex flex-wrap gap-x-7 gap-y-3">
+                  <ul className="flex flex-wrap gap-x-6 gap-y-2.5 uppercase tracking-[0.18em]">
                     {legalLinks.map((link) => (
                       <li key={link.label}>
                         {isFooterActionLink(link) ? (
                           <button
                             type="button"
                             onClick={() => handleAction(link.action)}
-                            className="transition-colors duration-300 ease-luxury hover:text-black"
+                            className="appearance-none p-0 font-sans font-normal transition-colors duration-300 ease-luxury hover:text-black"
                           >
                             {link.label}
                           </button>
