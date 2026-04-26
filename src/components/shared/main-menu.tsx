@@ -75,8 +75,8 @@ const navItems: NavItem[] = [
   },
   {
     href: "/about",
-    label: "About",
-    description: "The Sam’Alia house",
+    label: "The House",
+    description: "Origin and vision",
     icon: FiInfo,
   },
 ];
