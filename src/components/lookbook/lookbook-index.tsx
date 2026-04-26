@@ -9,32 +9,25 @@ type LookbookIndexProps = {
   entries: LookbookEntry[];
 };
 
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export function LookbookIndex({ entries }: LookbookIndexProps) {
-  const featured = entries.find((entry) => entry.featured) ?? entries[0];
-  const rest = entries.filter((entry) => entry.id !== featured?.id);
+  const primary = entries.find((entry) => entry.featured) ?? entries[0];
+  const secondary = entries.find((entry) => entry.id !== primary?.id);
+
+  const heroEntries = [primary, secondary].filter(Boolean) as LookbookEntry[];
+
+  const directoryEntries = entries.filter(
+    (entry) => !heroEntries.some((hero) => hero.id === entry.id)
+  );
 
   return (
     <main className="lux-page bg-white text-black">
-      <section className="border-b border-black/10 bg-white">
-        <div className="mx-auto w-full max-w-440 px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24 2xl:px-10">
-          <div className="mx-auto max-w-210 text-center">
-            <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-black/42">
-              Sam’Alia lookbook
-            </p>
-
-            <h1 className="mx-auto mt-5 max-w-190 font-display text-[clamp(2.7rem,6.2vw,7rem)] font-medium leading-[0.92] tracking-tighter text-black">
-              Visual studies from the house.
-            </h1>
-
-            <p className="mx-auto mt-7 max-w-135 text-sm leading-8 text-black/56 sm:text-base">
-              A directory of collections, campaigns, atelier studies, and
-              seasonal expressions from Sam’Alia.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {featured ? <FeaturedLookbook entry={featured} /> : null}
+      {heroEntries.length > 0 ? (
+        <LookbookHeroGrid entries={heroEntries} />
+      ) : null}
 
       <section className="bg-white text-black">
         <div className="mx-auto w-full max-w-440 px-4 py-14 sm:px-6 sm:py-18 lg:px-8 lg:py-24 2xl:px-10">
@@ -51,7 +44,7 @@ export function LookbookIndex({ entries }: LookbookIndexProps) {
           </div>
 
           <div className="grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((entry, index) => (
+            {directoryEntries.map((entry, index) => (
               <LookbookCard
                 key={entry.id}
                 entry={entry}
@@ -65,52 +58,105 @@ export function LookbookIndex({ entries }: LookbookIndexProps) {
   );
 }
 
-function FeaturedLookbook({ entry }: { entry: LookbookEntry }) {
+function LookbookHeroGrid({ entries }: { entries: LookbookEntry[] }) {
   return (
     <section className="bg-white text-black">
-      <Link
-        href={`/lookbook/${entry.slug}`}
-        className="group grid min-h-[calc(92svh-var(--nav-h))] border-b border-black/10 lg:grid-cols-[minmax(0,1.2fr)_minmax(420px,0.8fr)]"
+      <div
+        className={cn(
+          "grid border-b border-black/10",
+          entries.length === 1
+            ? "min-h-[calc(100svh-var(--nav-h))]"
+            : "lg:grid-cols-2 lg:min-h-[calc(100svh-var(--nav-h))]"
+        )}
       >
-        <div className="relative min-h-[64svh] overflow-hidden bg-black/5 lg:min-h-[calc(92svh-var(--nav-h))]">
-          <Image
-            src={entry.coverImage.src}
-            alt={entry.coverImage.alt}
-            fill
-            priority
-            quality={92}
-            sizes="(max-width: 1024px) 100vw, 62vw"
-            className="object-cover transition-transform duration-700 ease-luxury group-hover:scale-[1.025]"
-            style={{
-              objectPosition: entry.coverImage.objectPosition ?? "center",
-            }}
+        {entries.map((entry, index) => (
+          <HeroLookbookCard
+            key={entry.id}
+            entry={entry}
+            priority={index < 2}
+            isPrimary={index === 0}
+            single={entries.length === 1}
           />
+        ))}
+      </div>
+    </section>
+  );
+}
 
-          <div className="absolute inset-0 bg-black/0 transition-colors duration-500 ease-luxury group-hover:bg-black/12" />
+function HeroLookbookCard({
+  entry,
+  priority,
+  isPrimary,
+  single,
+}: {
+  entry: LookbookEntry;
+  priority: boolean;
+  isPrimary: boolean;
+  single: boolean;
+}) {
+  return (
+    <Link
+      href={`/lookbook/${entry.slug}`}
+      aria-label={entry.title}
+      className={cn(
+        "group relative block min-h-[68svh] overflow-hidden bg-black text-white lg:min-h-[calc(100svh-var(--nav-h))]",
+        !single && "border-b border-white/20 lg:border-b-0 lg:border-r",
+        !single && !isPrimary && "lg:border-r-0"
+      )}
+    >
+      <Image
+        src={entry.coverImage.src}
+        alt={entry.coverImage.alt}
+        fill
+        priority={priority}
+        quality={94}
+        sizes={single ? "100vw" : "(max-width: 1024px) 100vw, 50vw"}
+        className="object-cover transition-[transform,filter] duration-700 ease-luxury group-hover:scale-[1.025] group-hover:brightness-[0.88]"
+        style={{
+          objectPosition: entry.coverImage.objectPosition ?? "center",
+        }}
+      />
+
+      <div className="absolute inset-0 bg-black/12 transition-colors duration-500 ease-luxury group-hover:bg-black/24" />
+      <div className="absolute inset-x-0 bottom-0 h-[62%] bg-linear-to-t from-black/76 via-black/28 to-transparent" />
+
+      {isPrimary ? (
+        <div className="absolute left-4 top-5 z-10 sm:left-6 lg:left-8 2xl:left-10">
+          <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-white/72">
+            Sam’Alia lookbook
+          </p>
         </div>
+      ) : null}
 
-        <div className="flex items-end bg-white p-5 sm:p-8 lg:p-10 2xl:p-12">
-          <div className="max-w-135">
-            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-black/42">
+      <div className="relative z-10 flex min-h-[68svh] items-end lg:min-h-[calc(100svh-var(--nav-h))]">
+        <div className="w-full p-4 pb-8 sm:p-6 sm:pb-10 lg:p-8 lg:pb-12 2xl:p-10 2xl:pb-14">
+          <div className="max-w-120">
+            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/62">
               {entry.category} / {entry.season} / {entry.year}
             </p>
 
-            <h2 className="mt-5 font-display text-[clamp(2.25rem,5vw,5.7rem)] font-medium leading-[0.95] tracking-tight text-black">
-              {entry.title}
-            </h2>
+            {isPrimary ? (
+              <h1 className="mt-5 font-display text-[clamp(2rem,4.2vw,4.75rem)] font-medium leading-[0.96] tracking-tight text-white [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">
+                {entry.title}
+              </h1>
+            ) : (
+              <h2 className="mt-5 font-display text-[clamp(2rem,4.2vw,4.75rem)] font-medium leading-[0.96] tracking-tight text-white [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">
+                {entry.title}
+              </h2>
+            )}
 
-            <p className="mt-6 text-sm leading-8 text-black/58">
+            <p className="mt-5 max-w-105 text-sm leading-7 text-white/72 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] overflow-hidden sm:text-[0.95rem] sm:leading-8">
               {entry.description}
             </p>
 
-            <span className="mt-8 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.2em] text-black">
+            <span className="mt-7 inline-flex items-center gap-3 text-[10px] font-medium uppercase tracking-[0.22em] text-white">
               Discover lookbook
-              <FiArrowRight className="size-4 transition-transform duration-300 ease-luxury group-hover:translate-x-1" />
+              <FiArrowRight className="size-3.5 transition-transform duration-300 ease-luxury group-hover:translate-x-1" />
             </span>
           </div>
         </div>
-      </Link>
-    </section>
+      </div>
+    </Link>
   );
 }
 
@@ -149,11 +195,11 @@ function LookbookCard({
           {entry.category} / {entry.year}
         </p>
 
-        <h3 className="mt-3 max-w-120 text-[1.15rem] font-medium leading-snug tracking-tight text-black">
+        <h3 className="mt-3 max-w-120 text-[1.15rem] font-medium leading-snug tracking-tight text-black [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">
           {entry.title}
         </h3>
 
-        <p className="mt-3 max-w-120 text-sm leading-7 text-black/55">
+        <p className="mt-3 max-w-120 text-sm leading-7 text-black/55 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] overflow-hidden">
           {entry.subtitle}
         </p>
 

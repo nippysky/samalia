@@ -295,6 +295,7 @@ function ProductMasonryCard({
         <Image
           src={tile.src}
           alt={tile.alt}
+          loading="eager"
           fill
           priority={priority}
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"

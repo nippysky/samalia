@@ -74,15 +74,6 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
     };
   }, [open]);
 
-  function handleCheckout() {
-    pushToast({
-      variant: "info",
-      title: "Checkout prepared",
-      message:
-        "The checkout action is ready for backend payment integration when the production flow is connected.",
-    });
-  }
-
   function handleClearCart() {
     clearCart();
 
@@ -242,17 +233,22 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
                   <span className="text-black">{formatCartAmount(subtotal)}</span>
                 </div>
 
-                <BrandButton
-                  type="button"
-                  disabled={!hasItems}
-                  fullWidth
-                  size="md"
-                  variant={hasItems ? "primary" : "secondary"}
-                  className="mt-4"
-                  onClick={handleCheckout}
-                >
-                  Checkout
-                </BrandButton>
+        <BrandButton
+  href={hasItems ? "/checkout" : undefined}
+  type={!hasItems ? "button" : undefined}
+  disabled={!hasItems}
+  fullWidth
+  size="md"
+  variant={hasItems ? "primary" : "secondary"}
+  className="mt-4"
+  onClick={() => {
+    if (hasItems) {
+      setOpen(false);
+    }
+  }}
+>
+  Checkout
+</BrandButton>
               </div>
             </div>
           </motion.aside>
@@ -327,6 +323,7 @@ function CartLineItem({
             <Image
               src={item.image.src}
               alt={item.image.alt}
+              loading="eager"
               fill
               sizes="88px"
               className="object-cover transition-transform duration-700 ease-luxury hover:scale-[1.04]"

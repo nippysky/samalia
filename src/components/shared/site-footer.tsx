@@ -39,20 +39,18 @@ const footerSections: FooterSection[] = [
     title: "Explore",
     links: [
       { label: "Ready to wear", href: "/ready-to-wear" },
-      { label: "Look Book", href: "/look-book" },
-      { label: "Craft & legacy", href: "/craft-legacy" },
+      { label: "Lookbook", href: "/lookbook" },
+      { label: "Journal", href: "/journal" },
+      { label: "The House", href: "/about" },
     ],
   },
   {
     title: "Service",
-    // Size guide intentionally lives in the brand block, not here —
-    // having it inline as a <button> made it read heavier than the <a>
-    // links beside it (browser button rendering quirks). It's a more
-    // distinct action anyway, so a dedicated CTA fits better.
     links: [
-      { label: "Book appointment", href: "/bespoke-services" },
-      { label: "Certificate of Craft", href: "/certificate-of-craft" },
-      { label: "Contact", href: "/contact" },
+      { label: "Book appointment", href: "/book-appointment" },
+      { label: "FAQs", href: "/faq" },
+      { label: "Bespoke service", href: "/bespoke-services" },
+      { label: "Craft & legacy", href: "/craft-legacy" },
     ],
   },
   {
@@ -95,9 +93,6 @@ function FooterTextLink({
   link: FooterLink;
   onAction: (action: FooterAction) => void;
 }) {
-  // All link rows now resolve to <a> elements (since Size guide is gone),
-  // so no more button/anchor weight discrepancy. Kept the explicit normalisations
-  // anyway as a safety net for any future <button>-rendered link.
   const className =
     "group/link inline-flex w-fit appearance-none items-center gap-1.5 whitespace-nowrap p-0 font-sans text-[13px] font-normal leading-6 text-black/55 transition-colors duration-300 ease-luxury hover:text-black";
 
@@ -268,22 +263,8 @@ function NewsletterBlock({ compact = false }: { compact?: boolean }) {
           </div>
 
           <div className="mt-7">
-            {/*
-              Primary BrandButton.
-
-              Inline `background` + `border` shorthand are required because
-              globals.css has unlayered rules that beat Tailwind utilities:
-                - the * reset / button reset can override `bg-black`
-                - `button { border: 0 }` resets border-width to 0 AND
-                  border-style to none, so even setting borderColor alone
-                  doesn't paint anything (no width, no style → no border)
-
-              Using `border: '1px solid var(--black)'` shorthand sets all
-              three border properties at once, inline, so the cascade can't
-              touch any of them. The black edge becomes visible during the
-              white-overlay hover state, defining the button shape.
-            */}
             <BrandButton
+              type="submit"
               variant="primary"
               size="md"
               iconAfter={<FiArrowRight className="size-3.5" />}
@@ -317,14 +298,6 @@ function FooterBrandNote({
           presence.
         </p>
 
-        {/*
-          Size guide CTA — moved here from the Service column.
-          Uses BrandButton's `text` variant: uppercase, tracked, with the
-          underline-grow hover animation. The ruler icon nudges left on hover
-          (built into BrandButton's iconBefore animation). Sits as a refined
-          editorial action under the brand statement, separate from the link
-          lists so its different visual weight reads as intentional.
-        */}
         <div className="mt-6">
           <BrandButton
             variant="text"
@@ -362,7 +335,6 @@ export function SiteFooter() {
       <footer className="border-t border-black/10 bg-white text-black">
         <div className="w-full px-4 sm:px-6 lg:px-8 2xl:px-10">
           <div className="mx-auto w-full max-w-440">
-            {/* Desktop grid (lg+) */}
             <div className="hidden py-20 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.65fr)_minmax(0,0.65fr)_minmax(0,0.55fr)_minmax(0,1.2fr)] lg:gap-10 xl:gap-16 2xl:gap-24">
               <FooterBrandNote onAction={handleAction} />
 
@@ -377,7 +349,6 @@ export function SiteFooter() {
               <NewsletterBlock />
             </div>
 
-            {/* Mobile / tablet accordion (below lg) */}
             <div className="py-10 lg:hidden">
               <div className="border-b border-black/10 pb-8">
                 <FooterBrandNote onAction={handleAction} />
@@ -398,7 +369,6 @@ export function SiteFooter() {
               </div>
             </div>
 
-            {/* Legal bar */}
             <div className="border-t border-black/10 py-5">
               <div className="flex flex-col gap-4 text-[10px] tracking-[0.12em] text-black/40 sm:flex-row sm:items-center sm:justify-between">
                 <p className="uppercase tracking-[0.2em]">

@@ -12,10 +12,6 @@ type JournalIndexProps = {
   articles: JournalArticle[];
 };
 
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(" ");
-}
-
 export function JournalIndex({ articles }: JournalIndexProps) {
   const featured = articles.find((article) => article.featured) ?? articles[0];
   const rest = articles.filter((article) => article.id !== featured?.id);
@@ -24,20 +20,21 @@ export function JournalIndex({ articles }: JournalIndexProps) {
     <main className="lux-page bg-white text-black">
       <section className="border-b border-black/10 bg-white">
         <div className="mx-auto w-full max-w-440 px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24 2xl:px-10">
-  <div className="mx-auto max-w-230 text-center">
-  <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-black/42">
-    Sam’Alia journal
-  </p>
+          <div className="mx-auto max-w-230 text-center">
+            <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-black/42">
+              Sam’Alia journal
+            </p>
 
-  <h1 className="mx-auto mt-5 max-w-210 font-display text-[clamp(2.55rem,5.4vw,6.35rem)] font-medium leading-[0.94] tracking-[-0.045em] text-black">
-    Notes on form, craft, and culture.
-  </h1>
+            <h1 className="mx-auto mt-5 max-w-210 font-display text-[clamp(2.55rem,5.4vw,6.35rem)] font-medium leading-[0.94] tracking-tight text-black">
+              Notes on form, craft, and culture.
+            </h1>
 
-  <p className="mx-auto mt-7 max-w-140 text-sm leading-8 text-black/56 sm:text-base">
-    Editorial stories from the house: process notes, cultural memory,
-    material studies, private services, and the ideas shaping Sam’Alia.
-  </p>
-</div>
+            <p className="mx-auto mt-7 max-w-140 text-sm leading-8 text-black/56 sm:text-base">
+              Editorial stories from the house: process notes, cultural memory,
+              material studies, private services, and the ideas shaping
+              Sam’Alia.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -50,19 +47,19 @@ export function JournalIndex({ articles }: JournalIndexProps) {
               <p className="text-[10px] font-medium uppercase tracking-[0.3em] text-black/42">
                 Latest
               </p>
+
               <h2 className="mt-3 text-[1rem] font-medium uppercase tracking-[0.18em] text-black">
                 Journal entries
               </h2>
             </div>
           </div>
 
-          <div className="grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid items-start gap-x-5 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
             {rest.map((article, index) => (
               <JournalCard
                 key={article.id}
                 article={article}
                 priority={index < 3}
-                variant={index % 3 === 1 ? "tall" : "standard"}
               />
             ))}
           </div>
@@ -79,7 +76,7 @@ function FeaturedJournalCard({ article }: { article: JournalArticle }) {
         href={`/journal/${article.slug}`}
         className="group grid min-h-[calc(92svh-var(--nav-h))] border-b border-black/10 lg:grid-cols-[minmax(0,1.18fr)_minmax(420px,0.82fr)]"
       >
-        <div className="relative min-h-[62svh] overflow-hidden bg-black/4.5 lg:min-h-[calc(92svh-var(--nav-h))]">
+        <div className="relative min-h-[62svh] overflow-hidden bg-black/5 lg:min-h-[calc(92svh-var(--nav-h))]">
           <Image
             src={article.heroImage.src}
             alt={article.heroImage.alt}
@@ -101,7 +98,7 @@ function FeaturedJournalCard({ article }: { article: JournalArticle }) {
               {article.category} / {formatJournalDate(article.publishedAt)}
             </p>
 
-            <h2 className="mt-5 font-display text-[clamp(2.25rem,5vw,5.7rem)] font-medium leading-[0.95] tracking-[-0.045em] text-black">
+            <h2 className="mt-5 font-display text-[clamp(2.25rem,5vw,5.7rem)] font-medium leading-[0.95] tracking-tight text-black">
               {article.title}
             </h2>
 
@@ -123,24 +120,17 @@ function FeaturedJournalCard({ article }: { article: JournalArticle }) {
 function JournalCard({
   article,
   priority,
-  variant = "standard",
 }: {
   article: JournalArticle;
   priority: boolean;
-  variant?: "standard" | "tall";
 }) {
   return (
     <Link
       href={`/journal/${article.slug}`}
-      className="group block"
+      className="group block h-full"
       aria-label={article.title}
     >
-      <div
-        className={cn(
-          "relative overflow-hidden bg-black/4.5",
-          variant === "tall" ? "aspect-4/5" : "aspect-5/4"
-        )}
-      >
+      <div className="relative aspect-5/4 w-full overflow-hidden bg-black/5">
         <Image
           src={article.heroImage.src}
           alt={article.heroImage.alt}
@@ -161,7 +151,7 @@ function JournalCard({
           {article.category} / {formatJournalDate(article.publishedAt)}
         </p>
 
-        <h3 className="mt-3 max-w-120 text-[1.15rem] font-medium leading-snug tracking-[-0.035em] text-black">
+        <h3 className="mt-3 max-w-120 text-[1.15rem] font-medium leading-snug tracking-tight text-black">
           {article.title}
         </h3>
 
