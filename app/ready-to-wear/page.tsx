@@ -8,14 +8,14 @@ import { getReadyToWearProducts } from "@/src/data/ready-to-wear-products";
 export const metadata: Metadata = {
   title: "Ready to Wear",
   description:
-    "Explore Sam’Alia ready-to-wear pieces through a clean editorial image grid.",
+    "Explore Sam’Alia ready-to-wear pieces through garment type, material, and construction.",
   alternates: {
     canonical: "/ready-to-wear",
   },
   openGraph: {
     title: "Ready to Wear | Sam’Alia",
     description:
-      "Explore Sam’Alia ready-to-wear pieces through a clean editorial image grid.",
+      "Explore Sam’Alia ready-to-wear pieces through garment type, material, and construction.",
     url: "/ready-to-wear",
     images: [
       {

@@ -9,7 +9,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://samalia.com";
 const pageTitle = "Bespoke Services";
 
 const pageDescription =
-  "Explore Sam’Alia bespoke services including personalisation, private appointments, certificate of craft, gifting, Nigeria-first shipping, and Paystack-enabled payment support.";
+  "Explore Sam’Alia bespoke service: private fittings, measurements, material selection, personalisation, and final construction.";
 
 const bespokeHeroImage =
   "https://images.pexels.com/photos/6764997/pexels-photo-6764997.jpeg?auto=compress&cs=tinysrgb&w=2400";
@@ -66,9 +66,7 @@ export default function BespokeServicesPage() {
       "Personalisation",
       "Private appointments",
       "Certificate of craft",
-      "Gift option",
-      "Nigeria-first shipping",
-      "Paystack-enabled payment methods",
+      "Bespoke process",
     ],
     url: `${siteUrl}/bespoke-services`,
     image: bespokeHeroImage,

@@ -1,7 +1,6 @@
 // src/components/home/home-house-feature.tsx
 import type { CSSProperties } from "react";
 import Image from "next/image";
-import { FiArrowRight } from "react-icons/fi";
 
 import { BrandButton } from "@/src/components/ui/brand-button";
 
@@ -62,27 +61,22 @@ export function HomeHouseFeature({ feature }: HomeHouseFeatureProps) {
           <div className="absolute inset-0 bg-black/4" />
         </div>
 
-        <div className="flex items-center border-t border-black/10 bg-white px-4 py-16 sm:px-6 sm:py-20 lg:border-l lg:border-t-0 lg:px-8 lg:py-24 2xl:px-10">
+        <div className="flex items-center border-t border-black/10 bg-white px-4 py-18 sm:px-6 sm:py-24 lg:border-l lg:border-t-0 lg:px-8 lg:py-28 2xl:px-10">
           <div className="mx-auto w-full max-w-150 lg:mx-0">
             <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-black/42">
               {feature.eyebrow}
             </p>
 
-            <h2 className="mt-6 max-w-135 font-display text-[clamp(2.45rem,5.5vw,6rem)] font-medium leading-[0.94] tracking-tight text-black">
+            <h2 className="mt-7 max-w-135 font-display text-[clamp(2.45rem,5.5vw,6rem)] font-medium leading-[0.94] tracking-tight text-black">
               {feature.title}
             </h2>
 
-            <p className="mt-7 max-w-120 text-sm leading-8 text-black/58 sm:text-base">
+            <p className="mt-10 max-w-120 text-sm leading-8 text-black/58 sm:text-base">
               {feature.description}
             </p>
 
-            <div className="mt-9">
-              <BrandButton
-                href={feature.href}
-                variant="text"
-                size="md"
-                iconAfter={<FiArrowRight className="size-4" />}
-              >
+            <div className="mt-12">
+              <BrandButton href={feature.href} variant="text" size="md">
                 {feature.ctaLabel}
               </BrandButton>
             </div>

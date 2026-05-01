@@ -4,8 +4,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { FiArrowRight, FiMinus, FiPlus } from "react-icons/fi";
-import { LuRuler } from "react-icons/lu";
 
 import { BrandButton } from "@/src/components/ui/brand-button";
 import { CookiePreferencesModal } from "@/src/components/shared/cookie-preferences-modal";
@@ -39,6 +37,7 @@ const footerSections: FooterSection[] = [
     title: "Explore",
     links: [
       { label: "Ready to wear", href: "/ready-to-wear" },
+      { label: "Ceremonial", href: "/ceremonial-ready-to-wear" },
       { label: "Lookbook", href: "/lookbook" },
       { label: "Journal", href: "/journal" },
       { label: "The House", href: "/about" },
@@ -47,10 +46,10 @@ const footerSections: FooterSection[] = [
   {
     title: "Service",
     links: [
-      { label: "Book appointment", href: "/book-appointment" },
-      { label: "FAQs", href: "/faq" },
+      { label: "Request a fitting", href: "/book-appointment" },
       { label: "Bespoke service", href: "/bespoke-services" },
       { label: "Craft & legacy", href: "/craft-legacy" },
+      { label: "FAQs", href: "/faq" },
     ],
   },
   {
@@ -94,11 +93,7 @@ function FooterTextLink({
   onAction: (action: FooterAction) => void;
 }) {
   const className =
-    "group/link inline-flex w-fit appearance-none items-center gap-1.5 whitespace-nowrap p-0 font-sans text-[13px] font-normal leading-6 text-black/55 transition-colors duration-300 ease-luxury hover:text-black";
-
-  const icon = (
-    <FiArrowRight className="size-2.5 -translate-x-1 opacity-0 transition-[opacity,transform] duration-300 ease-luxury group-hover/link:translate-x-0 group-hover/link:opacity-100" />
-  );
+    "inline-flex w-fit appearance-none whitespace-nowrap p-0 font-sans text-[13px] font-normal leading-6 text-black/55 transition-colors duration-300 ease-luxury hover:text-black";
 
   if (isFooterActionLink(link)) {
     return (
@@ -107,8 +102,7 @@ function FooterTextLink({
         onClick={() => onAction(link.action)}
         className={className}
       >
-        <span>{link.label}</span>
-        {icon}
+        {link.label}
       </button>
     );
   }
@@ -121,16 +115,14 @@ function FooterTextLink({
         rel="noopener noreferrer"
         className={className}
       >
-        <span>{link.label}</span>
-        {icon}
+        {link.label}
       </a>
     );
   }
 
   return (
     <Link href={link.href} className={className}>
-      <span>{link.label}</span>
-      {icon}
+      {link.label}
     </Link>
   );
 }
@@ -189,12 +181,8 @@ function MobileFooterAccordion({
       >
         <FooterSectionTitle>{section.title}</FooterSectionTitle>
 
-        <span className="flex size-8 shrink-0 items-center justify-center text-black">
-          {open ? (
-            <FiMinus className="size-3.5" />
-          ) : (
-            <FiPlus className="size-3.5" />
-          )}
+        <span className="flex size-8 shrink-0 items-center justify-center text-[15px] text-black">
+          {open ? "−" : "+"}
         </span>
       </button>
 
@@ -239,7 +227,7 @@ function NewsletterBlock({ compact = false }: { compact?: boolean }) {
             compact ? "max-w-none" : "max-w-full"
           }`}
         >
-          Receive collection notes, private appointments, and new releases from
+          Receive house notes, appointment updates, and new pieces from
           Sam&apos;Alia.
         </p>
 
@@ -267,7 +255,6 @@ function NewsletterBlock({ compact = false }: { compact?: boolean }) {
               type="submit"
               variant="primary"
               size="md"
-              iconAfter={<FiArrowRight className="size-3.5" />}
               className="w-full lg:w-auto lg:min-w-44"
               style={{
                 backgroundColor: "var(--black)",
@@ -294,15 +281,14 @@ function FooterBrandNote({
 
       <div className="pt-6">
         <p className="text-[13px] leading-[1.75] text-black/55">
-          Luxury fashion and lifestyle shaped by heritage, restraint, and modern
-          presence.
+          A design house built through structure, craft, and control. Pieces are
+          developed with attention to form, material, and detail.
         </p>
 
         <div className="mt-6">
           <BrandButton
             variant="text"
             size="sm"
-            iconBefore={<LuRuler className="size-3.5" />}
             onClick={() => onAction("size-guide")}
           >
             Size guide
@@ -372,7 +358,7 @@ export function SiteFooter() {
             <div className="border-t border-black/10 py-5">
               <div className="flex flex-col gap-4 text-[10px] tracking-[0.12em] text-black/40 sm:flex-row sm:items-center sm:justify-between">
                 <p className="uppercase tracking-[0.2em]">
-                  © {year} Sam&apos;Alia. All rights reserved.
+                  © {year} {" "}Sam&apos;Alia. All rights reserved.
                 </p>
 
                 <nav aria-label="Legal links">

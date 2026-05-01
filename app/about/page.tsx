@@ -8,7 +8,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://samalia.com";
 
 const pageTitle = "The House";
 const pageDescription =
-  "Discover Sam’Alia, a luxury fashion and lifestyle house from Northern Nigeria shaped by heritage, restraint, craft, and modern African presence.";
+  "Discover Sam’Alia, a design house built on structure, discipline, craft, and cultural clarity.";
 
 function stringifyJsonLd(value: unknown) {
   return JSON.stringify(value).replace(/</g, "\\u003c");

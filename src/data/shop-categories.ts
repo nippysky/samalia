@@ -5,90 +5,66 @@ export const READY_TO_WEAR_ALL_CATEGORY = "all";
 
 export const readyToWearCategories: ShopCategory[] = [
   {
-    slug: "tops-and-tees",
-    title: "Tops & Tees",
-    description: "Elevated foundation layers, polos, and refined house tees.",
-    productionCategories: ["T-Shirts", "Polo Shirts"],
-    seoTitle: "Tops & Tees",
-    seoDescription:
-      "Explore Sam’Alia luxury tops, tees, and polos shaped by modern African refinement.",
-  },
-  {
     slug: "shirts",
     title: "Shirts",
-    description: "Structured day shirts, dinner shirts, and refined linen forms.",
-    productionCategories: ["Day Structured Shirts", "Dinner Shirts", "Linens"],
+    description:
+      "Shirts developed through form, material, and construction. Includes variations in weight, texture, and structure.",
+    productionCategories: [
+      "T-Shirts",
+      "Polo Shirts",
+      "Day Structured Shirts",
+      "Dinner Shirts",
+      "Linens",
+    ],
     seoTitle: "Shirts",
     seoDescription:
-      "Explore Sam’Alia day shirts, dinner shirts, and linen shirt forms.",
+      "Explore Sam’Alia shirts developed through form, material, and construction.",
   },
   {
-    slug: "trousers-and-denim",
-    title: "Trousers & Denim",
-    description: "Tailored trousers, dinner pants, linen trousers, and denim.",
+    slug: "trousers",
+    title: "Trousers",
+    description:
+      "Tailored trousers developed through structure, proportion, and fit. Includes variations shaped through material and finish.",
     productionCategories: ["Dinner Pants", "Denims", "Linens"],
-    seoTitle: "Trousers & Denim",
+    seoTitle: "Trousers",
     seoDescription:
-      "Explore Sam’Alia trousers, denim, and tailored lower-body pieces.",
+      "Explore Sam’Alia trousers developed through structure, proportion, and fit.",
   },
   {
-    slug: "sets",
-    title: "Sets",
-    description: "Travel sets, track sets, linen sets, and refined pairings.",
+    slug: "co-ordinates",
+    title: "Co-ordinates",
+    description:
+      "Coordinated garments designed to be worn together. Developed through shared structure, material, and proportion.",
     productionCategories: ["Travel Sets & Track Sets", "Linens"],
-    seoTitle: "Sets",
+    seoTitle: "Co-ordinates",
     seoDescription:
-      "Explore Sam’Alia ready-to-wear sets, travel sets, and coordinated pieces.",
-  },
-  {
-    slug: "shorts",
-    title: "Shorts",
-    description: "Tailored shorts, linen shorts, and embroidered resort forms.",
-    productionCategories: ["Shorts"],
-    seoTitle: "Shorts",
-    seoDescription:
-      "Explore Sam’Alia tailored shorts and resort casual luxury pieces.",
+      "Explore Sam’Alia coordinated garments developed through shared structure, material, and proportion.",
   },
   {
     slug: "outerwear",
     title: "Outerwear",
-    description: "Architectural coats, jackets, trenches, and overshirts.",
-    productionCategories: ["Outerwear"],
+    description:
+      "Outerwear developed through structure, weight, and proportion. Includes layered pieces shaped through material and finish.",
+    productionCategories: ["Outerwear", "Leather Clothing", "Loungewear"],
     seoTitle: "Outerwear",
     seoDescription:
-      "Explore Sam’Alia outerwear, coats, jackets, and structured overshirts.",
+      "Explore Sam’Alia outerwear developed through structure, weight, and proportion.",
   },
   {
-    slug: "loungewear",
-    title: "Loungewear",
-    description: "Private luxury wardrobe pieces, robes, and lounge sets.",
-    productionCategories: ["Loungewear"],
-    seoTitle: "Loungewear",
+    slug: "shorts",
+    title: "Shorts",
+    description:
+      "Shorts developed through proportion, ease, and construction. Built for movement without losing structure.",
+    productionCategories: ["Shorts"],
+    seoTitle: "Shorts",
     seoDescription:
-      "Explore Sam’Alia loungewear, robes, and private luxury wardrobe pieces.",
-  },
-  {
-    slug: "leather",
-    title: "Leather",
-    description: "Leather shirts, overshirts, pants, vests, and statement layers.",
-    productionCategories: ["Leather Clothing"],
-    seoTitle: "Leather",
-    seoDescription:
-      "Explore Sam’Alia leather clothing and prestige craftsmanship pieces.",
-  },
-  {
-    slug: "heritage-forms",
-    title: "Heritage Forms",
-    description: "Ceremonial RTW, jalabia, kaftans, tunics, and cultural forms.",
-    productionCategories: ["Ceremonial RTW", "Jalabia"],
-    seoTitle: "Heritage Forms",
-    seoDescription:
-      "Explore Sam’Alia ceremonial ready-to-wear, jalabia, kaftans, and heritage forms.",
+      "Explore Sam’Alia shorts developed through proportion, ease, and construction.",
   },
   {
     slug: "accessories",
     title: "Accessories",
-    description: "Belts, caps, bags, brooches, and house finishing details.",
+    description:
+      "Accessories developed as finishing pieces — functional, measured, and specific to the house.",
     productionCategories: [
       "Belts",
       "Caps",
@@ -97,7 +73,7 @@ export const readyToWearCategories: ShopCategory[] = [
     ],
     seoTitle: "Accessories",
     seoDescription:
-      "Explore Sam’Alia accessories, leather goods, caps, belts, bags, and finishing details.",
+      "Explore Sam’Alia accessories developed as functional finishing pieces.",
   },
 ];
 

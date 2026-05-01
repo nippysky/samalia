@@ -1,5 +1,6 @@
 // src/components/craft/craft-legacy-page.tsx
 import Image from "next/image";
+import Link from "next/link";
 
 import type {
   CraftLegacyContent,
@@ -53,24 +54,36 @@ function CraftLegacyHero({ content }: CraftLegacyPageProps) {
 
 function CraftLegacyStatement({ content }: CraftLegacyPageProps) {
   const { statement } = content;
+  const paragraphs = statement.body.split("\n\n");
 
   return (
     <section className="bg-white text-black">
-      <div className="mx-auto grid w-full max-w-440 gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[0.82fr_1.18fr] lg:px-8 lg:py-24 2xl:px-10">
+      <div className="mx-auto grid w-full max-w-440 gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[0.82fr_1.18fr] lg:px-8 lg:py-24 2xl:px-10">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-black/42">
             {statement.eyebrow}
           </p>
         </div>
 
-        <div className="max-w-170">
-          <h1 className="font-display text-[clamp(2rem,4vw,4.7rem)] font-medium leading-none tracking-[-0.035em] text-black">
+        <div className="max-w-175">
+          <h1 className="font-display text-[clamp(2.45rem,4.8vw,5.6rem)] font-medium leading-[0.96] tracking-[-0.045em] text-black">
             {statement.title}
           </h1>
 
-          <p className="mt-7 max-w-145 text-sm leading-8 text-black/58 sm:text-[0.96rem]">
-            {statement.body}
+          <p className="mt-8 max-w-145 font-display text-[clamp(1.65rem,2.8vw,3.1rem)] font-medium leading-[1.08] tracking-[-0.035em] text-black">
+            {statement.largeStatement}
           </p>
+
+          <div className="mt-10 space-y-6">
+            {paragraphs.map((paragraph) => (
+              <p
+                key={paragraph}
+                className="max-w-145 text-sm leading-8 text-black/58 sm:text-[0.96rem]"
+              >
+                {paragraph}
+              </p>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -165,7 +178,7 @@ function CraftLegacyPrinciples({ content }: CraftLegacyPageProps) {
         <div className="grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-black/42">
-              Principles
+              House Approach
             </p>
           </div>
 
@@ -173,7 +186,7 @@ function CraftLegacyPrinciples({ content }: CraftLegacyPageProps) {
             {content.principles.map((principle) => (
               <article
                 key={principle.id}
-                className="grid gap-5 bg-white py-8 sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-8 sm:py-10"
+                className="grid gap-6 bg-white py-9 sm:grid-cols-[180px_minmax(0,1fr)] sm:gap-10 sm:py-11"
               >
                 <h2 className="text-[0.76rem] font-medium uppercase tracking-[0.26em] text-black">
                   {principle.title}
@@ -194,20 +207,31 @@ function CraftLegacyPrinciples({ content }: CraftLegacyPageProps) {
 function CraftLegacyClosing() {
   return (
     <section className="border-t border-black/10 bg-white text-black">
-      <div className="mx-auto flex w-full max-w-440 flex-col items-start justify-between gap-8 px-4 py-14 sm:px-6 lg:flex-row lg:items-center lg:px-8 lg:py-16 2xl:px-10">
-        <div className="max-w-160">
+      <div className="mx-auto grid w-full max-w-440 gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8 lg:py-16 2xl:px-10">
+        <div>
           <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-black/42">
             Continue
           </p>
-
-          <h2 className="mt-4 font-display text-[clamp(1.9rem,3.6vw,4rem)] font-medium leading-none tracking-[-0.035em] text-black">
-            Discover the pieces shaped by the hand.
-          </h2>
         </div>
 
-        <BrandButton href="/ready-to-wear" variant="primary">
-          Ready to wear
-        </BrandButton>
+        <div className="max-w-180">
+          <h2 className="font-display text-[clamp(1.9rem,3.6vw,4rem)] font-medium leading-none tracking-[-0.035em] text-black">
+            Explore garments developed through craft.
+          </h2>
+
+          <div className="mt-10 flex flex-col gap-4 sm:w-fit sm:flex-row sm:items-center">
+            <BrandButton href="/ready-to-wear" variant="primary">
+              Ready to Wear
+            </BrandButton>
+
+            <Link
+              href="/ceremonial-ready-to-wear"
+              className="inline-flex min-h-12 items-center justify-center text-[11px] font-medium uppercase tracking-[0.18em] text-black underline underline-offset-8 transition-colors duration-300 ease-luxury hover:text-black/55"
+            >
+              Ceremonial Ready to Wear
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
   );

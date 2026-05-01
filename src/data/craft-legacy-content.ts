@@ -31,6 +31,7 @@ export type CraftLegacyContent = {
   statement: {
     eyebrow: string;
     title: string;
+    largeStatement: string;
     body: string;
   };
   editorialMedia: CraftLegacyEditorialMedia[];
@@ -44,14 +45,15 @@ export const craftLegacyContent: CraftLegacyContent = {
     eyebrow: "Sam’Alia",
     title: "Craft & Legacy",
     description:
-      "A house language shaped by Northern memory, precise hands, and modern restraint.",
+      "Process, material, construction, and craft carried through the house.",
   },
 
   statement: {
-    eyebrow: "Craft is continuity",
-    title: "The hand remembers what the future must refine.",
+    eyebrow: "Craft & Legacy",
+    title: "Craft is continuity.",
+    largeStatement: "The hand remembers what the future must refine.",
     body:
-      "Sam’Alia treats craft as a living discipline. Every line, stitch, surface, and proportion carries a conversation between heritage and modern form. The result is not costume, not nostalgia, but a quiet architecture of identity.",
+      "The work is developed through material, construction, and finishing — with a focus on precision, durability, and clarity.\n\nThe house draws from long-standing craft traditions, particularly from northern Nigeria, where techniques are rooted in repetition, skill, and discipline.\n\nThese methods are not referenced — they are practiced, refined, and carried forward.\n\nEach piece reflects a continuous dialogue between what has been made before and what is being shaped now.",
   },
 
   editorialMedia: [
@@ -73,7 +75,7 @@ export const craftLegacyContent: CraftLegacyContent = {
       id: "craft-detail-03",
       kind: "image",
       src: "/dummy/craft3.jpeg",
-      alt: "Sam’Alia heritage textile detail",
+      alt: "Sam’Alia textile detail",
       objectPosition: "center",
     },
   ],
@@ -83,19 +85,19 @@ export const craftLegacyContent: CraftLegacyContent = {
       id: "restraint",
       title: "Restraint",
       text:
-        "Decoration is never used as noise. Every mark must earn its place on the garment.",
+        "Every element must serve the garment. Nothing is added without purpose.",
     },
     {
       id: "memory",
       title: "Memory",
       text:
-        "Northern forms, cultural references, and inherited techniques are treated as source material for modern design.",
+        "Cultural knowledge and inherited techniques inform the work — not as reference, but as foundation.",
     },
     {
       id: "construction",
       title: "Construction",
       text:
-        "Fit, finishing, and proportion carry the authority of the piece before any branding does.",
+        "Fit, structure, and finishing define the piece before any visible identity does.",
     },
   ],
 };

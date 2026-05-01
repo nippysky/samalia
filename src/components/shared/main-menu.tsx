@@ -7,21 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-  FiArrowRight,
-  FiBookOpen,
-  FiChevronDown,
-  FiFeather,
-  FiHome,
-  FiInfo,
-  FiScissors,
-  FiStar,
-  FiX,
-} from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 import { HiOutlineMenuAlt2 } from "react-icons/hi";
-import { LuNotebookText } from "react-icons/lu";
-
-import { readyToWearCategories } from "@/src/data/shop-categories";
 
 type MenuColor = "white" | "dark";
 
@@ -32,52 +19,67 @@ type MainMenuProps = {
 type NavItem = {
   href: string;
   label: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
 };
+
+const readyToWearCategories: NavItem[] = [
+  {
+    href: "/ready-to-wear/shirts",
+    label: "Shirts",
+  },
+  {
+    href: "/ready-to-wear/trousers",
+    label: "Trousers",
+  },
+  {
+    href: "/ready-to-wear/co-ordinates",
+    label: "Co-ordinates",
+  },
+  {
+    href: "/ready-to-wear/outerwear",
+    label: "Outerwear",
+  },
+  {
+    href: "/ready-to-wear/shorts",
+    label: "Shorts",
+  },
+  {
+    href: "/ready-to-wear/accessories",
+    label: "Accessories",
+  },
+];
 
 const navItems: NavItem[] = [
   {
     href: "/",
     label: "Home",
-    description: "Enter the house",
-    icon: FiHome,
   },
   {
     href: "/bespoke-services",
     label: "Bespoke",
-    description: "Tailored for presence",
-    icon: FiScissors,
   },
   {
     href: "/ready-to-wear",
-    label: "Ready to wear",
-    description: "Modern refined pieces",
-    icon: FiStar,
+    label: "Ready to Wear",
+  },
+  {
+    href: "/ceremonial-ready-to-wear",
+    label: "Ceremonial",
   },
   {
     href: "/lookbook",
     label: "Lookbook",
-    description: "Visual stories",
-    icon: FiBookOpen,
   },
   {
     href: "/craft-legacy",
     label: "Craft & Legacy",
-    description: "Heritage in motion",
-    icon: FiFeather,
   },
   {
     href: "/journal",
     label: "Journal",
-    description: "Culture and notes",
-    icon: LuNotebookText,
   },
   {
     href: "/about",
     label: "The House",
-    description: "Origin and vision",
-    icon: FiInfo,
   },
 ];
 
@@ -85,14 +87,30 @@ function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function isActivePath(pathname: string | null, href: string) {
+  if (href === "/") return pathname === "/";
+
+  return Boolean(pathname?.startsWith(href));
+}
+
 export function MainMenu({ color = "dark" }: MainMenuProps) {
   const pathname = usePathname();
   const reducedMotion = Boolean(useReducedMotion());
 
   const [open, setOpen] = React.useState(false);
+  const [readyToWearOpen, setReadyToWearOpen] = React.useState(false);
 
   const closeButtonRef = React.useRef<HTMLButtonElement | null>(null);
   const triggerButtonRef = React.useRef<HTMLButtonElement | null>(null);
+
+  const year = new Date().getFullYear();
+  const iconColor = color === "white" ? "text-white" : "text-black";
+  const readyToWearActive = isActivePath(pathname, "/ready-to-wear");
+
+  function handleOpenMenu() {
+    setReadyToWearOpen(readyToWearActive);
+    setOpen(true);
+  }
 
   React.useEffect(() => {
     if (!open) return;
@@ -123,8 +141,6 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
     };
   }, [open]);
 
-  const iconColor = color === "white" ? "text-white" : "text-black";
-
   const drawer = (
     <AnimatePresence>
       {open ? (
@@ -147,14 +163,14 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
             aria-modal="true"
             aria-labelledby="main-menu-title"
             aria-describedby="main-menu-description"
-            className="fixed inset-y-0 left-0 z-90 w-screen border-r border-black/10 bg-white text-black shadow-none sm:w-[min(460px,calc(100vw-24px))]"
+            className="fixed inset-y-0 left-0 z-90 w-screen border-r border-black/10 bg-white text-black shadow-none sm:w-[min(440px,calc(100vw-24px))]"
             initial={reducedMotion ? false : { x: "-100%" }}
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.46, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="flex h-dvh flex-col">
-              <div className="border-b border-black/10 px-5 py-4 sm:px-7">
+              <div className="px-5 py-5 sm:px-7">
                 <div className="flex items-center justify-between gap-5">
                   <div className="flex min-w-0 items-center gap-3">
                     <div className="relative size-10 shrink-0">
@@ -169,11 +185,8 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
                     </div>
 
                     <div className="min-w-0">
-                      <p className="text-[11px] font-medium uppercase leading-none tracking-[0.22em] text-black">
+                      <p className="text-[10px] font-medium uppercase leading-none tracking-[0.24em] text-black/42">
                         Menu
-                      </p>
-                      <p className="mt-1 truncate text-[10px] uppercase tracking-[0.2em] text-black/45">
-                        Discover Sam’Alia
                       </p>
                     </div>
                   </div>
@@ -191,30 +204,31 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
                     type="button"
                     aria-label="Close menu"
                     onClick={() => setOpen(false)}
-                    className="group flex size-10 shrink-0 items-center justify-center border border-black/10 text-black transition-colors duration-300 ease-luxury hover:border-black hover:bg-black hover:text-white"
+                    className="group flex size-10 shrink-0 items-center justify-center text-black/55 transition-colors duration-300 ease-luxury hover:text-black"
                   >
                     <FiX className="size-5 transition-transform duration-300 ease-luxury group-hover:rotate-90" />
                   </button>
                 </div>
               </div>
 
-              <nav className="flex-1 overflow-y-auto px-5 py-6 sm:px-7 sm:py-7">
-                <ul className="space-y-2.5">
+              <nav className="flex-1 overflow-y-auto px-5 pb-8 pt-12 sm:px-7 sm:pt-14">
+                <ul className="space-y-7">
                   {navItems.map((item, index) => {
-                    const active =
-                      item.href === "/"
-                        ? pathname === "/"
-                        : Boolean(pathname?.startsWith(item.href));
+                    const active = isActivePath(pathname, item.href);
+                    const isReadyToWear = item.href === "/ready-to-wear";
 
-                    if (item.href === "/ready-to-wear") {
+                    if (isReadyToWear) {
                       return (
-                        <ReadyToWearMenuGroup
+                        <ReadyToWearMenuItem
                           key={item.href}
                           item={item}
                           active={active}
                           index={index}
-                          pathname={pathname}
+                          open={readyToWearOpen}
                           reducedMotion={reducedMotion}
+                          onToggle={() =>
+                            setReadyToWearOpen((current) => !current)
+                          }
                           onNavigate={() => setOpen(false)}
                         />
                       );
@@ -234,13 +248,10 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
                 </ul>
               </nav>
 
-              <div className="border-t border-black/10 px-5 py-4 sm:px-7">
-                <div className="flex items-center justify-between gap-4">
-                  <p className="shrink-0 text-[9px] uppercase tracking-[0.22em] text-black/45">
-                    Heritage / Modernity / Presence
-                  </p>
-                  <span className="h-px flex-1 bg-black/10" />
-                </div>
+              <div className="px-5 py-6 sm:px-7">
+                <p className="max-w-72 text-[10px] font-medium uppercase leading-5 tracking-[0.22em] text-black/34">
+                  © {year} Sam&apos;Alia. All rights reserved.
+                </p>
               </div>
             </div>
           </motion.aside>
@@ -257,7 +268,7 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
         aria-label="Open menu"
         aria-haspopup="dialog"
         aria-expanded={open}
-        onClick={() => setOpen(true)}
+        onClick={handleOpenMenu}
         className={cn(
           "group flex size-10 shrink-0 items-center justify-center transition-colors duration-300 ease-luxury sm:size-11",
           iconColor
@@ -270,147 +281,6 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
         ? createPortal(drawer, document.body)
         : null}
     </>
-  );
-}
-
-function ReadyToWearMenuGroup({
-  item,
-  active,
-  index,
-  pathname,
-  reducedMotion,
-  onNavigate,
-}: {
-  item: NavItem;
-  active: boolean;
-  index: number;
-  pathname: string | null;
-  reducedMotion: boolean;
-  onNavigate: () => void;
-}) {
-  const Icon = item.icon;
-  const [expanded, setExpanded] = React.useState(() =>
-    Boolean(pathname?.startsWith("/ready-to-wear"))
-  );
-
-  return (
-    <li>
-      <motion.div
-        initial={reducedMotion ? false : { opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 8 }}
-        transition={{
-          duration: 0.38,
-          delay: reducedMotion ? 0 : index * 0.028,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-      >
-        <button
-          type="button"
-          aria-expanded={expanded}
-          onClick={() => setExpanded((current) => !current)}
-          className={cn(
-            "group/link relative flex w-full items-center justify-between gap-4 overflow-hidden border px-4 py-4 text-left transition-colors duration-300 ease-luxury",
-            active
-              ? "border-black bg-black text-white"
-              : "border-black/10 bg-white text-black hover:border-black hover:bg-black hover:text-white"
-          )}
-        >
-          <span
-            className={cn(
-              "pointer-events-none absolute inset-y-0 left-0 w-px transition-transform duration-500 ease-luxury",
-              active
-                ? "scale-y-100 bg-white"
-                : "scale-y-0 bg-black group-hover/link:scale-y-100 group-hover/link:bg-white"
-            )}
-          />
-
-          <span className="flex min-w-0 items-center gap-3.5">
-            <span
-              className={cn(
-                "flex size-10 shrink-0 items-center justify-center border transition-colors duration-300 ease-luxury",
-                active
-                  ? "border-white/20 bg-white text-black"
-                  : "border-black/10 bg-black/5 text-black group-hover/link:border-white/20 group-hover/link:bg-white group-hover/link:text-black"
-              )}
-            >
-              <Icon className="size-4.25" />
-            </span>
-
-            <span className="min-w-0">
-              <span
-                className={cn(
-                  "block truncate text-[0.78rem] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
-                  active
-                    ? "text-white"
-                    : "text-black group-hover/link:text-white"
-                )}
-              >
-                {item.label}
-              </span>
-
-              <span
-                className={cn(
-                  "mt-1 block truncate text-[10px] uppercase tracking-[0.16em] transition-colors duration-300",
-                  active
-                    ? "text-white/60"
-                    : "text-black/45 group-hover/link:text-white/65"
-                )}
-              >
-                {item.description}
-              </span>
-            </span>
-          </span>
-
-          <FiChevronDown
-            className={cn(
-              "size-4.25 shrink-0 transition-[color,transform] duration-300 ease-luxury",
-              expanded && "rotate-180",
-              active
-                ? "text-white"
-                : "text-black/35 group-hover/link:text-white"
-            )}
-          />
-        </button>
-
-        <AnimatePresence initial={false}>
-          {expanded ? (
-            <motion.div
-              initial={reducedMotion ? false : { height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
-              className="overflow-hidden"
-            >
-              <div className="border-x border-b border-black/10 px-4 py-4">
-                <div className="grid gap-2">
-                  <Link
-                    href="/ready-to-wear"
-                    onClick={onNavigate}
-                    className="flex min-h-10 items-center justify-between border border-black/10 px-3 text-[10px] font-medium uppercase tracking-[0.18em] text-black/65 transition-colors duration-300 ease-luxury hover:border-black hover:bg-black hover:text-white"
-                  >
-                    View all ready to wear
-                    <FiArrowRight className="size-3.5" />
-                  </Link>
-
-                  {readyToWearCategories.map((category) => (
-                    <Link
-                      key={category.slug}
-                      href={`/ready-to-wear/${category.slug}`}
-                      onClick={onNavigate}
-                      className="flex min-h-10 items-center justify-between border border-black/10 px-3 text-[10px] font-medium uppercase tracking-[0.18em] text-black/65 transition-colors duration-300 ease-luxury hover:border-black hover:bg-black hover:text-white"
-                    >
-                      {category.title}
-                      <FiArrowRight className="size-3.5" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
-      </motion.div>
-    </li>
   );
 }
 
@@ -427,12 +297,10 @@ function MenuLink({
   reducedMotion: boolean;
   onNavigate: () => void;
 }) {
-  const Icon = item.icon;
-
   return (
     <li>
       <motion.div
-        initial={reducedMotion ? false : { opacity: 0, y: 12 }}
+        initial={reducedMotion ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 8 }}
         transition={{
@@ -446,67 +314,110 @@ function MenuLink({
           onClick={onNavigate}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "group/link relative flex items-center justify-between gap-4 overflow-hidden border px-4 py-4 transition-colors duration-300 ease-luxury",
-            active
-              ? "border-black bg-black text-white"
-              : "border-black/10 bg-white text-black hover:border-black hover:bg-black hover:text-white"
+            "block w-fit text-[0.86rem] font-medium uppercase tracking-[0.24em] transition-colors duration-300 ease-luxury hover:text-black",
+            active ? "text-black" : "text-black/62"
           )}
         >
-          <span
-            className={cn(
-              "pointer-events-none absolute inset-y-0 left-0 w-px transition-transform duration-500 ease-luxury",
-              active
-                ? "scale-y-100 bg-white"
-                : "scale-y-0 bg-black group-hover/link:scale-y-100 group-hover/link:bg-white"
-            )}
-          />
-
-          <span className="flex min-w-0 items-center gap-3.5">
-            <span
-              className={cn(
-                "flex size-10 shrink-0 items-center justify-center border transition-colors duration-300 ease-luxury",
-                active
-                  ? "border-white/20 bg-white text-black"
-                  : "border-black/10 bg-black/5 text-black group-hover/link:border-white/20 group-hover/link:bg-white group-hover/link:text-black"
-              )}
-            >
-              <Icon className="size-4.25" />
-            </span>
-
-            <span className="min-w-0">
-              <span
-                className={cn(
-                  "block truncate text-[0.78rem] font-medium uppercase tracking-[0.2em] transition-colors duration-300",
-                  active
-                    ? "text-white"
-                    : "text-black group-hover/link:text-white"
-                )}
-              >
-                {item.label}
-              </span>
-
-              <span
-                className={cn(
-                  "mt-1 block truncate text-[10px] uppercase tracking-[0.16em] transition-colors duration-300",
-                  active
-                    ? "text-white/60"
-                    : "text-black/45 group-hover/link:text-white/65"
-                )}
-              >
-                {item.description}
-              </span>
-            </span>
-          </span>
-
-          <FiArrowRight
-            className={cn(
-              "size-4.25 shrink-0 transition-[color,transform] duration-300 ease-luxury",
-              active
-                ? "text-white"
-                : "text-black/35 group-hover/link:translate-x-1 group-hover/link:text-white"
-            )}
-          />
+          {item.label}
         </Link>
+      </motion.div>
+    </li>
+  );
+}
+
+function ReadyToWearMenuItem({
+  item,
+  active,
+  index,
+  open,
+  reducedMotion,
+  onToggle,
+  onNavigate,
+}: {
+  item: NavItem;
+  active: boolean;
+  index: number;
+  open: boolean;
+  reducedMotion: boolean;
+  onToggle: () => void;
+  onNavigate: () => void;
+}) {
+  const contentId = React.useId();
+  const pathname = usePathname();
+
+  return (
+    <li>
+      <motion.div
+        initial={reducedMotion ? false : { opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 8 }}
+        transition={{
+          duration: 0.38,
+          delay: reducedMotion ? 0 : index * 0.028,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+      >
+        <div className="flex w-full items-baseline justify-between gap-5">
+          <Link
+            href={item.href}
+            onClick={onNavigate}
+            aria-current={active ? "page" : undefined}
+            className={cn(
+              "block w-fit text-[0.86rem] font-medium uppercase tracking-[0.24em] transition-colors duration-300 ease-luxury hover:text-black",
+              active ? "text-black" : "text-black/62"
+            )}
+          >
+            {item.label}
+          </Link>
+
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-controls={contentId}
+            onClick={onToggle}
+            className="shrink-0 text-[10px] font-medium uppercase tracking-[0.22em] text-black/35 transition-colors duration-300 ease-luxury hover:text-black"
+          >
+            {open ? "Close" : "Categories"}
+          </button>
+        </div>
+
+        <AnimatePresence initial={false}>
+          {open ? (
+            <motion.div
+              id={contentId}
+              initial={reducedMotion ? false : { height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{
+                duration: 0.34,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+              className="overflow-hidden"
+            >
+              <ul className="space-y-3.5 pt-5">
+                {readyToWearCategories.map((category) => {
+                  const categoryActive = isActivePath(pathname, category.href);
+
+                  return (
+                    <li key={category.href}>
+                      <Link
+                        href={category.href}
+                        onClick={onNavigate}
+                        aria-current={categoryActive ? "page" : undefined}
+                        className={cn(
+                          "block w-fit text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-300 ease-luxury hover:text-black",
+                          categoryActive ? "text-black" : "text-black/40"
+                        )}
+                      >
+                        {category.label}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
       </motion.div>
     </li>
   );

@@ -8,38 +8,21 @@ export type HouseImage = {
   objectPosition?: CSSProperties["objectPosition"];
 };
 
-export type HousePrinciple = {
+export type HouseTextSection = {
   id: string;
-  title: string;
-  text: string;
-};
-
-export type HouseTimelineItem = {
-  id: string;
-  label: string;
-  title: string;
-  text: string;
+  eyebrow: string;
+  title?: string;
+  paragraphs: string[];
 };
 
 export type HouseContent = {
   hero: {
     eyebrow: string;
     title: string;
-    subtitle: string;
-    image: HouseImage;
-  };
-  origin: {
-    eyebrow: string;
-    title: string;
     body: string;
     image: HouseImage;
   };
-  manifesto: {
-    title: string;
-    body: string;
-  };
-  principles: HousePrinciple[];
-  timeline: HouseTimelineItem[];
+  sections: HouseTextSection[];
   closing: {
     eyebrow: string;
     title: string;
@@ -55,8 +38,8 @@ export const houseContent: HouseContent = {
   hero: {
     eyebrow: "Sam’Alia",
     title: "The House",
-    subtitle:
-      "A luxury fashion and lifestyle house from Northern Nigeria, shaped by heritage, restraint, and modern presence.",
+    body:
+      "Sam’Aila is a design house built on structure, discipline, and cultural clarity.",
     image: {
       id: "house-hero",
       src: pexels("9849297", 2600),
@@ -65,88 +48,62 @@ export const houseContent: HouseContent = {
     },
   },
 
-  origin: {
-    eyebrow: "North from here",
-    title: "A house built from memory, discipline, and modern form.",
-    body:
-      "Sam’Alia begins in Northern Nigeria as a study of culture, proportion, and presence. The house is not interested in costume or nostalgia. It is interested in what heritage can become when it is handled with restraint, technical clarity, and a contemporary eye.",
-    image: {
-      id: "house-origin",
-      src: pexels("9849642", 2200),
-      alt: "Designer holding fabric inside a fashion studio",
-      objectPosition: "center",
-    },
-  },
-
-  manifesto: {
-    title: "Heritage is not a reference. It is a responsibility.",
-    body:
-      "Every garment, object, service, and visual expression must carry the same discipline: fewer gestures, stronger meaning. Sam’Alia treats clothing as architecture for identity — quiet, precise, and deeply rooted.",
-  },
-
-  principles: [
+  sections: [
     {
-      id: "heritage",
-      title: "Heritage",
-      text:
-        "Northern memory is treated as source material, not decoration. Forms, gestures, and cultural codes are studied before they are transformed.",
+      id: "approach",
+      eyebrow: "House approach",
+      title: "Structure, discipline, and cultural clarity.",
+      paragraphs: [
+        "The work is developed through a consistent approach — focused on form, material, and construction. Each piece is considered, not assembled.",
+        "At its core, the house is a study of craft.",
+      ],
     },
     {
-      id: "restraint",
-      title: "Restraint",
-      text:
-        "The house removes excess so construction can speak. Luxury is expressed through proportion, fabric, fit, and finish.",
+      id: "memory",
+      eyebrow: "Cultural memory",
+      title: "Foundation, not reference.",
+      paragraphs: [
+        "The work draws from cultural memory — particularly northern Nigerian craftsmanship — not as reference, but as foundation. Techniques, materials, and ways of making are preserved, refined, and translated into a contemporary language.",
+        "This is not replication.",
+        "It is continuation.",
+      ],
     },
     {
-      id: "craft",
-      title: "Craft",
-      text:
-        "Craft is the evidence of attention. Every detail must feel considered, from the visible silhouette to the hidden seam.",
+      id: "architecture",
+      eyebrow: "Architecture",
+      title: "Line, proportion, repetition, and balance.",
+      paragraphs: [
+        "Architecture informs the house at every level. Line, proportion, repetition, and balance shape garments that feel measured and intentional.",
+        "Craft sits at the centre of the work. Embroidery, construction, and finishing are treated as structural elements, not decoration.",
+      ],
+    },
+    {
+      id: "standard",
+      eyebrow: "House standard",
+      title: "Nothing is left unresolved.",
+      paragraphs: [
+        "There is a constant standard applied across everything — detail, fit, weight, and balance. Nothing is left unresolved.",
+        "The house does not follow trend cycles or respond to noise. It moves with clarity, guided by an internal standard.",
+      ],
     },
     {
       id: "presence",
-      title: "Presence",
-      text:
-        "Sam’Alia designs for people who enter quietly but are remembered. The pieces are built for elegance without performance.",
-    },
-  ],
-
-  timeline: [
-    {
-      id: "origin",
-      label: "01",
-      title: "Origin",
-      text:
-        "The house begins with a Northern Nigerian point of view: culture, restraint, elegance, and the desire to create modern African luxury with permanence.",
-    },
-    {
-      id: "atelier",
-      label: "02",
-      title: "Atelier language",
-      text:
-        "The visual language develops through fabric testing, proportion studies, embroidery direction, and garment construction.",
-    },
-    {
-      id: "ready-to-wear",
-      label: "03",
-      title: "Ready to wear",
-      text:
-        "The first public expression of the house: clean pieces, modern silhouettes, and a foundation for daily luxury.",
-    },
-    {
-      id: "future",
-      label: "04",
-      title: "The future",
-      text:
-        "Sam’Alia expands across fashion, craft, private services, journal storytelling, and cultural objects with the same house discipline.",
+      eyebrow: "Presence",
+      title: "Precision before visibility.",
+      paragraphs: [
+        "The objective is not excess, but precision.",
+        "Not visibility, but presence.",
+        "This is a house built with control.",
+        "And maintained through consistency.",
+      ],
     },
   ],
 
   closing: {
     eyebrow: "House direction",
-    title: "North from here. Modern everywhere.",
+    title: "What is built with care will endure.",
     body:
-      "Sam’Alia is building a design language that can travel without losing its origin. The work is quiet, exacting, and made to last beyond the season.",
+      "Sam’Alia continues through structure, craft, and a consistent internal standard.",
     image: {
       id: "house-closing",
       src: pexels("4620612", 2200),

@@ -3,15 +3,7 @@
 
 import * as React from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import {
-  FiChevronDown,
-  FiCreditCard,
-  FiGift,
-  FiPackage,
-  FiPenTool,
-  FiScissors,
-  FiShield,
-} from "react-icons/fi";
+import { FiChevronDown } from "react-icons/fi";
 
 import { BrandButton } from "@/src/components/ui/brand-button";
 
@@ -22,7 +14,6 @@ type ServiceItem = {
   summary: string;
   body: string;
   details: string[];
-  icon: React.ComponentType<{ className?: string }>;
   cta?: {
     label: string;
     href: string;
@@ -35,32 +26,30 @@ const serviceItems: ServiceItem[] = [
     eyebrow: "01",
     title: "Personalisation",
     summary:
-      "Initials, private markings, finishing choices, and quiet details made specific to the wearer.",
+      "Initials, private markings, finishing options, and details specific to the wearer.",
     body:
-      "Sam’Alia personalisation is designed to feel private rather than loud. Depending on the piece, selected details may include initials, tonal embroidery, custom placement, modified finishing, or a discreet inscription within the garment.",
+      "Personalisation is handled through controlled details specific to the piece and the wearer.",
     details: [
-      "Available on selected ready-to-wear, craft, and bespoke pieces.",
-      "Placement, lettering, and finishing are confirmed before production.",
-      "Personalised pieces may require additional atelier time.",
+      "Initials and private markings.",
+      "Finishing options confirmed before production.",
+      "Placement and treatment reviewed with the client.",
     ],
-    icon: FiPenTool,
   },
   {
     id: "book-appointment",
     eyebrow: "02",
     title: "Book appointment",
     summary:
-      "A private session for fittings, measurements, collection previews, and bespoke direction.",
+      "Private sessions for fittings, measurements, collection previews, and bespoke direction.",
     body:
-      "Appointments are created for clients who want a closer relationship with the house. A session may include measurements, fit review, fabric discussion, styling direction, or early access to selected pieces.",
+      "Appointments are structured around fit, proportion, fabric, and intended use.",
     details: [
-      "Available first for clients in Nigeria.",
-      "Virtual appointment support can be added as the service expands.",
-      "Appointment confirmation is subject to atelier availability.",
+      "Fittings and measurements.",
+      "Material review and selection.",
+      "Collection preview and bespoke direction.",
     ],
-    icon: FiScissors,
     cta: {
-      label: "Request appointment",
+      label: "Request a Fitting",
       href: "/book-appointment",
     },
   },
@@ -69,60 +58,28 @@ const serviceItems: ServiceItem[] = [
     eyebrow: "03",
     title: "Certificate of craft",
     summary:
-      "A house record for selected pieces, documenting identity, material language, and provenance.",
+      "A house record for selected pieces — documenting construction, material, and identity.",
     body:
-      "The Certificate of Craft is an archive-led record for selected Sam’Alia pieces. It can document the piece identity, material notes, craft category, production context, and house authentication.",
+      "Selected pieces may carry a house record documenting how the piece was developed.",
     details: [
-      "Available for selected craft-signature and bespoke pieces.",
-      "Designed as a long-term ownership and authentication record.",
-      "Certificate information can later connect to digital product records.",
+      "Construction notes.",
+      "Material record.",
+      "Piece identity and house authentication.",
     ],
-    icon: FiShield,
   },
   {
-    id: "gift-option",
+    id: "process",
     eyebrow: "04",
-    title: "Gift option",
+    title: "Process",
     summary:
-      "Minimal gift presentation for pieces intended for ceremony, appreciation, or private exchange.",
+      "Consultation, development, fittings, and final delivery handled through a private service flow.",
     body:
-      "Gift presentation stays aligned with Sam’Alia’s restraint: clean packaging, optional note inclusion, and careful preparation before dispatch. The intention is premium, quiet, and personal.",
+      "Each commission follows a structured process — consultation, development, fittings, and final delivery.",
     details: [
-      "Available for eligible ready-to-wear and accessory orders.",
-      "Gift notes may be included on request.",
-      "Packaging may vary by item size, fragility, and order type.",
+      "Details, including timelines and cost, are discussed and confirmed during the appointment.",
+      "Payment is introduced only after the service has been confirmed.",
+      "The process remains private, considered, and service-led.",
     ],
-    icon: FiGift,
-  },
-  {
-    id: "shipping-option",
-    eyebrow: "05",
-    title: "Shipping option",
-    summary:
-      "Nigeria-first delivery support for ready-to-wear, accessories, and selected private orders.",
-    body:
-      "Sam’Alia begins with a Nigeria-first delivery model. Ready-to-ship pieces can be prepared after order confirmation, while bespoke, personalised, or atelier-finished pieces may require a longer lead time before dispatch.",
-    details: [
-      "Launch delivery support is focused on Nigeria.",
-      "Lagos and major Nigerian city delivery workflows can be prioritized first.",
-      "International shipping can be introduced after the local workflow is stable.",
-    ],
-    icon: FiPackage,
-  },
-  {
-    id: "payment-methods",
-    eyebrow: "06",
-    title: "Payment methods",
-    summary:
-      "A Paystack-ready payment direction for secure Nigerian checkout and private order flows.",
-    body:
-      "For launch, Sam’Alia’s payment experience can be built around Paystack for Nigeria-first commerce. The production flow can support card payments, transfer-based checkout, payment confirmation, and private invoice-style payment links for bespoke orders.",
-    details: [
-      "Paystack checkout can support the main online purchase flow.",
-      "Private appointments and bespoke orders can use invoice/payment-link confirmation.",
-      "Backend payment verification should confirm successful payment before order fulfilment.",
-    ],
-    icon: FiCreditCard,
   },
 ];
 
@@ -134,20 +91,25 @@ export function BespokeServicesContent() {
   return (
     <section className="bg-white text-black">
       <div className="mx-auto w-full max-w-440 px-4 py-18 sm:px-6 sm:py-22 lg:px-8 lg:py-28 2xl:px-10">
-        <div className="mx-auto max-w-150 text-center">
+        <div className="mx-auto max-w-165 text-center">
           <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-black/42">
-            Sam’Alia services
+            Bespoke Service
           </p>
 
           <h1 className="mt-5 font-display text-[clamp(2.35rem,4.7vw,4.9rem)] font-medium leading-[0.98] tracking-[-0.04em] text-black">
-            Bespoke Service
+            Private service, developed with care.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-125 text-sm leading-8 text-black/56 sm:text-[0.96rem]">
-            A considered service language for personal pieces, private
-            appointments, gifting, craft authentication, Nigerian shipping, and
-            Paystack-enabled payments.
-          </p>
+          <div className="mx-auto mt-9 max-w-132 space-y-5 text-sm leading-8 text-black/58 sm:text-[0.96rem]">
+            <p>
+              A considered service built around the individual — measurements,
+              material selection, fittings, and final construction.
+            </p>
+            <p>
+              Each piece is developed with precision, clarity, and attention to
+              detail.
+            </p>
+          </div>
         </div>
 
         <div className="mx-auto mt-18 max-w-260 border-t border-black/10 lg:mt-24">
@@ -163,7 +125,6 @@ export function BespokeServicesContent() {
 function ServiceAccordion({ item }: { item: ServiceItem }) {
   const reducedMotion = Boolean(useReducedMotion());
   const [open, setOpen] = React.useState(false);
-  const Icon = item.icon;
 
   return (
     <section className="border-b border-black/10">
@@ -171,14 +132,10 @@ function ServiceAccordion({ item }: { item: ServiceItem }) {
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="group grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 py-8 text-left transition-colors duration-300 ease-luxury sm:gap-6 sm:py-9 lg:grid-cols-[96px_64px_minmax(220px,0.62fr)_minmax(0,1fr)_auto] lg:py-11"
+        className="group grid w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-5 py-9 text-left transition-colors duration-300 ease-luxury sm:gap-6 sm:py-10 lg:grid-cols-[96px_minmax(220px,0.62fr)_minmax(0,1fr)_auto] lg:py-12"
       >
         <span className="hidden text-[10px] font-medium uppercase tracking-[0.26em] text-black/32 lg:block">
           {item.eyebrow}
-        </span>
-
-        <span className="flex size-12 shrink-0 items-center justify-center border border-black/10 text-black transition-colors duration-300 ease-luxury group-hover:border-black group-hover:bg-black group-hover:text-white">
-          <Icon className="size-4.5" />
         </span>
 
         <span className="min-w-0">
@@ -193,7 +150,7 @@ function ServiceAccordion({ item }: { item: ServiceItem }) {
 
         <FiChevronDown
           className={cn(
-            "size-4 shrink-0 text-black/42 transition-transform duration-300 ease-luxury",
+            "size-4 shrink-0 text-black/38 transition-transform duration-300 ease-luxury",
             open && "rotate-180"
           )}
         />
@@ -208,15 +165,14 @@ function ServiceAccordion({ item }: { item: ServiceItem }) {
             transition={{ duration: 0.42, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="pb-10 sm:pb-12 lg:grid lg:grid-cols-[96px_64px_minmax(220px,0.62fr)_minmax(0,1fr)_auto] lg:pb-14">
-              <div className="hidden lg:block" />
+            <div className="pb-10 sm:pb-12 lg:grid lg:grid-cols-[96px_minmax(220px,0.62fr)_minmax(0,1fr)_auto] lg:pb-14">
               <div className="hidden lg:block" />
               <div className="hidden lg:block" />
 
               <div className="max-w-170">
                 <p className="text-sm leading-8 text-black/62">{item.body}</p>
 
-                <ul className="mt-7 space-y-4 text-sm leading-7 text-black/56">
+                <ul className="mt-8 space-y-4 text-sm leading-7 text-black/56">
                   {item.details.map((detail) => (
                     <li key={detail} className="flex gap-4">
                       <span className="mt-3 h-px w-6 shrink-0 bg-black/32" />
@@ -226,7 +182,7 @@ function ServiceAccordion({ item }: { item: ServiceItem }) {
                 </ul>
 
                 {item.cta ? (
-                  <div className="mt-9">
+                  <div className="mt-10">
                     <BrandButton href={item.cta.href} variant="primary">
                       {item.cta.label}
                     </BrandButton>

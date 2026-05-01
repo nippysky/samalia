@@ -8,7 +8,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://samalia.com";
 
 const pageTitle = "Craft & Legacy";
 const pageDescription =
-  "Explore Sam’Alia Craft & Legacy, a media-led expression of Northern memory, atelier discipline, construction, and modern African luxury.";
+  "Explore Sam’Alia Craft & Legacy: process, material, construction, and northern Nigerian craft traditions.";
 
 function stringifyJsonLd(value: unknown) {
   return JSON.stringify(value).replace(/</g, "\\u003c");
@@ -58,10 +58,10 @@ export default async function CraftLegacyRoutePage() {
       url: siteUrl,
     },
     about: [
-      "African luxury fashion",
       "Northern Nigerian craft",
       "Atelier construction",
-      "Heritage design",
+      "Material process",
+      "Garment finishing",
     ],
     image: `${siteUrl}${content.hero.posterSrc}`,
     video: {

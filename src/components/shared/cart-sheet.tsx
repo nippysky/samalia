@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { FiArrowRight, FiMinus, FiPlus, FiTrash2, FiX } from "react-icons/fi";
+import { FiX } from "react-icons/fi";
 import { HiOutlineShoppingBag } from "react-icons/hi2";
 
 import { BrandButton } from "@/src/components/ui/brand-button";
@@ -79,8 +79,8 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
 
     pushToast({
       variant: "success",
-      title: "Cart cleared",
-      message: "All selected pieces have been removed from your cart.",
+      title: "Selection cleared",
+      message: "All selected pieces have been removed.",
     });
   }
 
@@ -91,7 +91,7 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
           <motion.button
             key="cart-overlay"
             type="button"
-            aria-label="Close cart"
+            aria-label="Close selected pieces"
             className="fixed inset-0 z-80 bg-black/35 backdrop-blur-[2px]"
             initial={reducedMotion ? false : { opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -132,14 +132,14 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
                         id="cart-sheet-title"
                         className="text-[11px] font-medium uppercase leading-none tracking-[0.22em] text-black"
                       >
-                        Cart
+                        Selected Pieces
                       </p>
 
                       <p
                         id="cart-sheet-description"
                         className="mt-1 truncate text-[10px] uppercase tracking-[0.2em] text-black/45"
                       >
-                        {cartCount} selected item
+                        {cartCount} selected piece
                         {cartCount === 1 ? "" : "s"}
                       </p>
                     </div>
@@ -148,7 +148,7 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
                   <button
                     ref={closeButtonRef}
                     type="button"
-                    aria-label="Close cart"
+                    aria-label="Close selected pieces"
                     onClick={() => setOpen(false)}
                     className="group flex size-10 shrink-0 items-center justify-center border border-black/10 text-black transition-colors duration-300 ease-luxury hover:border-black hover:bg-black hover:text-white"
                   >
@@ -182,7 +182,7 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
                       onClick={handleClearCart}
                       className="mt-2 inline-flex text-[10px] font-medium uppercase tracking-[0.2em] text-black/42 transition-colors duration-300 ease-luxury hover:text-black"
                     >
-                      Clear cart
+                      Clear selection
                     </button>
                   </motion.div>
                 </div>
@@ -198,29 +198,23 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
                     }}
                     className="w-full max-w-80 text-center"
                   >
-                    <div className="mx-auto mb-5 flex size-14 items-center justify-center border border-black/10 bg-white">
-                      <HiOutlineShoppingBag className="size-6 text-black" />
-                    </div>
-
-                    <p className="mt-6 text-[0.78rem] font-medium uppercase tracking-[0.22em] text-black">
-                      Your cart is empty
+                    <p className="text-[0.78rem] font-medium uppercase tracking-[0.22em] text-black">
+                      No pieces selected.
                     </p>
 
-                    <p className="mt-3 text-sm leading-7 text-black/55">
-                      Add pieces to your cart and they will appear here before
-                      checkout.
+                    <p className="mt-4 text-sm leading-7 text-black/55">
+                      Selected pieces will appear here before checkout.
                     </p>
 
-                    <div className="mt-7">
+                    <div className="mt-8">
                       <BrandButton
                         href="/ready-to-wear"
                         fullWidth
                         size="md"
                         variant="primary"
-                        iconAfter={<FiArrowRight className="size-4" />}
                         onClick={() => setOpen(false)}
                       >
-                        Shop ready to wear
+                        View Pieces
                       </BrandButton>
                     </div>
                   </motion.div>
@@ -233,22 +227,22 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
                   <span className="text-black">{formatCartAmount(subtotal)}</span>
                 </div>
 
-        <BrandButton
-  href={hasItems ? "/checkout" : undefined}
-  type={!hasItems ? "button" : undefined}
-  disabled={!hasItems}
-  fullWidth
-  size="md"
-  variant={hasItems ? "primary" : "secondary"}
-  className="mt-4"
-  onClick={() => {
-    if (hasItems) {
-      setOpen(false);
-    }
-  }}
->
-  Checkout
-</BrandButton>
+                <BrandButton
+                  href={hasItems ? "/checkout" : undefined}
+                  type={!hasItems ? "button" : undefined}
+                  disabled={!hasItems}
+                  fullWidth
+                  size="md"
+                  variant={hasItems ? "primary" : "secondary"}
+                  className="mt-4"
+                  onClick={() => {
+                    if (hasItems) {
+                      setOpen(false);
+                    }
+                  }}
+                >
+                  Checkout
+                </BrandButton>
               </div>
             </div>
           </motion.aside>
@@ -262,7 +256,7 @@ export function CartSheet({ iconClassName }: CartSheetProps) {
       <button
         ref={triggerButtonRef}
         type="button"
-        aria-label="Open cart"
+        aria-label="Open selected pieces"
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen(true)}
@@ -306,8 +300,8 @@ function CartLineItem({
 
     pushToast({
       variant: "success",
-      title: "Removed from cart",
-      message: `${item.productName} was removed from your cart.`,
+      title: "Removed from selection",
+      message: `${item.productName} was removed.`,
     });
   }
 
@@ -355,9 +349,9 @@ function CartLineItem({
               type="button"
               aria-label={`Remove ${item.productName}`}
               onClick={handleRemove}
-              className="flex size-8 shrink-0 items-center justify-center text-black/35 transition-colors duration-300 ease-luxury hover:text-black"
+              className="shrink-0 text-[10px] font-medium uppercase tracking-[0.16em] text-black/38 transition-colors duration-300 ease-luxury hover:text-black"
             >
-              <FiTrash2 className="size-4" />
+              Remove
             </button>
           </div>
 
@@ -367,9 +361,9 @@ function CartLineItem({
                 type="button"
                 aria-label={`Decrease ${item.productName} quantity`}
                 onClick={() => decrementItem(item.id)}
-                className="flex size-9 items-center justify-center text-black/55 transition-colors duration-300 hover:text-black"
+                className="flex size-9 items-center justify-center text-sm text-black/55 transition-colors duration-300 hover:text-black"
               >
-                <FiMinus className="size-3.5" />
+                −
               </button>
 
               <span className="flex h-9 min-w-8 items-center justify-center text-[11px] font-medium text-black">
@@ -380,9 +374,9 @@ function CartLineItem({
                 type="button"
                 aria-label={`Increase ${item.productName} quantity`}
                 onClick={() => incrementItem(item.id)}
-                className="flex size-9 items-center justify-center text-black/55 transition-colors duration-300 hover:text-black"
+                className="flex size-9 items-center justify-center text-sm text-black/55 transition-colors duration-300 hover:text-black"
               >
-                <FiPlus className="size-3.5" />
+                +
               </button>
             </div>
 

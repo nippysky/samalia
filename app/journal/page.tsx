@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 import { JournalIndex } from "@/src/components/journal/journal-index";
 import { getJournalArticles } from "@/src/data/journal-content";
 
-const pageTitle = "Journal";
+const pageTitle = "From the House";
 const pageDescription =
-  "Read Sam’Alia journal entries on craft, culture, material studies, private appointments, and the house language behind modern African luxury.";
+  "Notes from the Sam’Alia house: pieces, process, material decisions, private appointments, and the thinking behind the work.";
 
 export const metadata: Metadata = {
   title: pageTitle,
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
         url: "/og-samalia.jpg",
         width: 1200,
         height: 630,
-        alt: "Sam’Alia Journal",
+        alt: "Sam’Alia From the House",
       },
     ],
   },

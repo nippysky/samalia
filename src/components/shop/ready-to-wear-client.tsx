@@ -7,15 +7,13 @@ import { FiSearch, FiSliders, FiX } from "react-icons/fi";
 import { BrandButton } from "@/src/components/ui/brand-button";
 import { ProductMasonryGrid } from "@/src/components/shop/product-masonry-grid";
 import { ReadyToWearFilterSheet } from "@/src/components/shop/ready-to-wear-filter-sheet";
-import {
-  READY_TO_WEAR_ALL_CATEGORY,
-} from "@/src/data/shop-categories";
+import { READY_TO_WEAR_ALL_CATEGORY } from "@/src/data/shop-categories";
 import type {
   ReadyToWearFilters,
   ShopCategory,
   ShopProduct,
 } from "@/src/lib/shop/types";
-import { filterReadyToWearProducts, getCategoryProductCount } from "@/src/data/filter-products";
+import { filterReadyToWearProducts } from "@/src/data/filter-products";
 
 type ReadyToWearClientProps = {
   products: ShopProduct[];
@@ -57,7 +55,8 @@ export function ReadyToWearClient({
 }: ReadyToWearClientProps) {
   const [rawSearch, setRawSearch] = React.useState("");
   const [filtersOpen, setFiltersOpen] = React.useState(false);
-  const [filters, setFilters] = React.useState<ReadyToWearFilters>(defaultFilters);
+  const [filters, setFilters] =
+    React.useState<ReadyToWearFilters>(defaultFilters);
 
   const { debouncedValue, pending } = useDebouncedValue(rawSearch);
 
@@ -116,8 +115,8 @@ export function ReadyToWearClient({
               Ready to wear
             </p>
 
-            <div className="relative mt-8">
-              <div className="mx-auto flex h-15 max-w-190 items-center border border-black/14 bg-white px-5 transition-colors duration-300 ease-luxury focus-within:border-black">
+            <div className="mx-auto mt-8 flex max-w-210 items-center justify-center gap-3">
+              <div className="flex h-15 min-w-0 flex-1 items-center border border-black/14 bg-white px-5 transition-colors duration-300 ease-luxury focus-within:border-black">
                 <FiSearch className="size-4.5 shrink-0 text-black/45" />
 
                 <input
@@ -143,25 +142,24 @@ export function ReadyToWearClient({
                     </button>
                   ) : null}
                 </div>
-
-                <button
-                  type="button"
-                  aria-label="Open filters"
-                  onClick={() => setFiltersOpen(true)}
-                  className="ml-2 flex size-9 shrink-0 items-center justify-center border border-black/10 transition-colors duration-300 ease-luxury hover:border-black hover:bg-black hover:text-white"
-                >
-                  <FiSliders className="size-4" />
-                </button>
               </div>
+
+              <button
+                type="button"
+                aria-label="Open filters"
+                onClick={() => setFiltersOpen(true)}
+                className="flex size-15 shrink-0 items-center justify-center border border-black/14 bg-white text-black transition-colors duration-300 ease-luxury hover:border-black hover:bg-black hover:text-white"
+              >
+                <FiSliders className="size-4" />
+              </button>
             </div>
 
-            <div className="mt-6 flex flex-wrap justify-center gap-2">
+            <div className="mt-8 flex flex-wrap justify-center gap-2">
               <CategoryPill
                 active={filters.categorySlug === READY_TO_WEAR_ALL_CATEGORY}
                 onClick={() => setCategory(READY_TO_WEAR_ALL_CATEGORY)}
               >
                 All
-                <span>{products.length}</span>
               </CategoryPill>
 
               {categories.map((category) => (
@@ -171,12 +169,11 @@ export function ReadyToWearClient({
                   onClick={() => setCategory(category.slug)}
                 >
                   {category.title}
-                  <span>{getCategoryProductCount(products, category.slug)}</span>
                 </CategoryPill>
               ))}
             </div>
 
-            <p className="mt-7 text-[11px] uppercase tracking-[0.18em] text-black/40">
+            <p className="mt-9 text-[11px] uppercase tracking-[0.18em] text-black/40">
               {pending
                 ? "Searching"
                 : `${filteredProducts.length} ${
@@ -229,7 +226,7 @@ function CategoryPill({
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex h-10 items-center gap-2 border px-4 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 ease-luxury",
+        "inline-flex h-10 items-center border px-4 text-[11px] font-medium uppercase tracking-[0.16em] transition-colors duration-300 ease-luxury",
         active
           ? "border-black bg-black text-white"
           : "border-black/10 bg-white text-black/55 hover:border-black hover:text-black"
@@ -245,11 +242,13 @@ function NoResultsState({ onReset }: { onReset: () => void }) {
     <section className="flex min-h-[42svh] items-center justify-center bg-white px-4 py-24 text-center text-black">
       <div className="max-w-120">
         <p className="text-[11px] font-medium uppercase tracking-[0.28em]">
-          No results found
+          No pieces found
         </p>
+
         <p className="mt-5 text-sm leading-7 text-black/55">
           Try a different category, material, price range, or search term.
         </p>
+
         <div className="mt-8 flex justify-center">
           <BrandButton type="button" variant="outline" onClick={onReset}>
             Reset search

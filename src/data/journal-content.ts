@@ -91,7 +91,7 @@ export const journalArticles: JournalArticle[] = [
       objectPosition: "center",
     },
     excerpt:
-      "A reflection on Sam’Alia’s visual discipline: not costume, not nostalgia, but a living design house shaped from the North outward.",
+      "A reflection on the house’s visual discipline — not costume, not nostalgia, but a system built through structure, craft, and control.",
     blocks: [
       {
         id: "north-p1",
@@ -173,7 +173,7 @@ export const journalArticles: JournalArticle[] = [
       objectPosition: "center",
     },
     excerpt:
-      "Fabric is the first architecture of a piece. It decides how the garment stands, falls, breathes, and remembers.",
+      "Fabric determines how a garment stands, moves, and holds its shape. It is the starting point for every piece.",
     blocks: [
       {
         id: "fabric-p1",
@@ -240,7 +240,7 @@ export const journalArticles: JournalArticle[] = [
       objectPosition: "center",
     },
     excerpt:
-      "Private appointments are designed around attention: measurements, intent, fabric, and the client’s presence.",
+      "Private appointments are built around precision — measurements, material selection, and a clear understanding of the client.",
     blocks: [
       {
         id: "appointment-p1",
@@ -301,7 +301,7 @@ export const journalArticles: JournalArticle[] = [
       objectPosition: "center",
     },
     excerpt:
-      "When a garment is stripped of noise, construction becomes visible. That is where authority begins.",
+      "When excess is removed, construction becomes visible. That is where clarity and authority begin.",
     blocks: [
       {
         id: "restraint-p1",
