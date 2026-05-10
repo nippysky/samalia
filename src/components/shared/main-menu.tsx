@@ -1,4 +1,3 @@
-// src/components/shared/main-menu.tsx
 "use client";
 
 import * as React from "react";
@@ -21,33 +20,6 @@ type NavItem = {
   label: string;
 };
 
-const readyToWearCategories: NavItem[] = [
-  {
-    href: "/ready-to-wear/shirts",
-    label: "Shirts",
-  },
-  {
-    href: "/ready-to-wear/trousers",
-    label: "Trousers",
-  },
-  {
-    href: "/ready-to-wear/co-ordinates",
-    label: "Co-ordinates",
-  },
-  {
-    href: "/ready-to-wear/outerwear",
-    label: "Outerwear",
-  },
-  {
-    href: "/ready-to-wear/shorts",
-    label: "Shorts",
-  },
-  {
-    href: "/ready-to-wear/accessories",
-    label: "Accessories",
-  },
-];
-
 const navItems: NavItem[] = [
   {
     href: "/",
@@ -60,10 +32,6 @@ const navItems: NavItem[] = [
   {
     href: "/ready-to-wear",
     label: "Ready to Wear",
-  },
-  {
-    href: "/ceremonial-ready-to-wear",
-    label: "Ceremonial",
   },
   {
     href: "/lookbook",
@@ -98,17 +66,14 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
   const reducedMotion = Boolean(useReducedMotion());
 
   const [open, setOpen] = React.useState(false);
-  const [readyToWearOpen, setReadyToWearOpen] = React.useState(false);
 
   const closeButtonRef = React.useRef<HTMLButtonElement | null>(null);
   const triggerButtonRef = React.useRef<HTMLButtonElement | null>(null);
 
   const year = new Date().getFullYear();
   const iconColor = color === "white" ? "text-white" : "text-black";
-  const readyToWearActive = isActivePath(pathname, "/ready-to-wear");
 
   function handleOpenMenu() {
-    setReadyToWearOpen(readyToWearActive);
     setOpen(true);
   }
 
@@ -215,24 +180,6 @@ export function MainMenu({ color = "dark" }: MainMenuProps) {
                 <ul className="space-y-7">
                   {navItems.map((item, index) => {
                     const active = isActivePath(pathname, item.href);
-                    const isReadyToWear = item.href === "/ready-to-wear";
-
-                    if (isReadyToWear) {
-                      return (
-                        <ReadyToWearMenuItem
-                          key={item.href}
-                          item={item}
-                          active={active}
-                          index={index}
-                          open={readyToWearOpen}
-                          reducedMotion={reducedMotion}
-                          onToggle={() =>
-                            setReadyToWearOpen((current) => !current)
-                          }
-                          onNavigate={() => setOpen(false)}
-                        />
-                      );
-                    }
 
                     return (
                       <MenuLink
@@ -320,104 +267,6 @@ function MenuLink({
         >
           {item.label}
         </Link>
-      </motion.div>
-    </li>
-  );
-}
-
-function ReadyToWearMenuItem({
-  item,
-  active,
-  index,
-  open,
-  reducedMotion,
-  onToggle,
-  onNavigate,
-}: {
-  item: NavItem;
-  active: boolean;
-  index: number;
-  open: boolean;
-  reducedMotion: boolean;
-  onToggle: () => void;
-  onNavigate: () => void;
-}) {
-  const contentId = React.useId();
-  const pathname = usePathname();
-
-  return (
-    <li>
-      <motion.div
-        initial={reducedMotion ? false : { opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 8 }}
-        transition={{
-          duration: 0.38,
-          delay: reducedMotion ? 0 : index * 0.028,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-      >
-        <div className="flex w-full items-baseline justify-between gap-5">
-          <Link
-            href={item.href}
-            onClick={onNavigate}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "block w-fit text-[0.86rem] font-medium uppercase tracking-[0.24em] transition-colors duration-300 ease-luxury hover:text-black",
-              active ? "text-black" : "text-black/62"
-            )}
-          >
-            {item.label}
-          </Link>
-
-          <button
-            type="button"
-            aria-expanded={open}
-            aria-controls={contentId}
-            onClick={onToggle}
-            className="shrink-0 text-[10px] font-medium uppercase tracking-[0.22em] text-black/35 transition-colors duration-300 ease-luxury hover:text-black"
-          >
-            {open ? "Close" : "Categories"}
-          </button>
-        </div>
-
-        <AnimatePresence initial={false}>
-          {open ? (
-            <motion.div
-              id={contentId}
-              initial={reducedMotion ? false : { height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{
-                duration: 0.34,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="overflow-hidden"
-            >
-              <ul className="space-y-3.5 pt-5">
-                {readyToWearCategories.map((category) => {
-                  const categoryActive = isActivePath(pathname, category.href);
-
-                  return (
-                    <li key={category.href}>
-                      <Link
-                        href={category.href}
-                        onClick={onNavigate}
-                        aria-current={categoryActive ? "page" : undefined}
-                        className={cn(
-                          "block w-fit text-[11px] font-medium uppercase tracking-[0.2em] transition-colors duration-300 ease-luxury hover:text-black",
-                          categoryActive ? "text-black" : "text-black/40"
-                        )}
-                      >
-                        {category.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </motion.div>
-          ) : null}
-        </AnimatePresence>
       </motion.div>
     </li>
   );

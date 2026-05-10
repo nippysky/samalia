@@ -1,4 +1,3 @@
-// src/data/shop-categories.ts
 import type { ShopCategory } from "@/src/lib/shop/types";
 
 export const READY_TO_WEAR_ALL_CATEGORY = "all";
@@ -8,7 +7,7 @@ export const readyToWearCategories: ShopCategory[] = [
     slug: "shirts",
     title: "Shirts",
     description:
-      "Shirts developed through form, material, and construction. Includes variations in weight, texture, and structure.",
+      "Shirts developed through form, material, and construction. Includes refined everyday shirts, dinner shirts, polos, tees, and linen shapes.",
     productionCategories: [
       "T-Shirts",
       "Polo Shirts",
@@ -24,7 +23,7 @@ export const readyToWearCategories: ShopCategory[] = [
     slug: "trousers",
     title: "Trousers",
     description:
-      "Tailored trousers developed through structure, proportion, and fit. Includes variations shaped through material and finish.",
+      "Tailored trousers developed through structure, proportion, and fit. Includes denim, dinner pants, linen trousers, and clean daily silhouettes.",
     productionCategories: ["Dinner Pants", "Denims", "Linens"],
     seoTitle: "Trousers",
     seoDescription:
@@ -44,7 +43,7 @@ export const readyToWearCategories: ShopCategory[] = [
     slug: "outerwear",
     title: "Outerwear",
     description:
-      "Outerwear developed through structure, weight, and proportion. Includes layered pieces shaped through material and finish.",
+      "Outerwear developed through structure, weight, and proportion. Includes layered pieces, leather clothing, and private loungewear.",
     productionCategories: ["Outerwear", "Leather Clothing", "Loungewear"],
     seoTitle: "Outerwear",
     seoDescription:
@@ -74,6 +73,16 @@ export const readyToWearCategories: ShopCategory[] = [
     seoTitle: "Accessories",
     seoDescription:
       "Explore Sam’Alia accessories developed as functional finishing pieces.",
+  },
+  {
+    slug: "ceremonial",
+    title: "Ceremonial",
+    description:
+      "Ceremonial ready-to-wear pieces shaped for elevated occasions, cultural form, and precise house construction.",
+    productionCategories: ["Ceremonial RTW", "Jalabia", "Heritage Forms"],
+    seoTitle: "Ceremonial Ready to Wear",
+    seoDescription:
+      "Explore Sam’Alia ceremonial ready-to-wear pieces shaped for elevated occasions and cultural form.",
   },
 ];
 

@@ -1,4 +1,3 @@
-// src/components/shop/product-masonry-grid.tsx
 "use client";
 
 import * as React from "react";
@@ -36,6 +35,7 @@ type ProductMasonryGridProps = {
   initialPages?: number;
   pageSize?: number;
   maxPages?: number;
+  loadMode?: "manual" | "infinite";
   getHref?: (tile: ProductMasonryTile) => string;
 };
 
@@ -88,35 +88,32 @@ function createMasonryPage({
   maxPages: number;
 }): ProductMasonryPage {
   const images = flattenProductImages(products);
+  const maxItems = Math.min(images.length, pageSize * maxPages);
 
-  if (images.length === 0) {
+  if (images.length === 0 || maxItems === 0) {
     return {
       tiles: [],
       nextPage: null,
     };
   }
 
-  const pageOffset = page * pageSize;
+  const start = page * pageSize;
+  const end = Math.min(start + pageSize, maxItems);
+  const pageImages = images.slice(start, end);
 
-  const tiles = Array.from({ length: pageSize }, (_, index) => {
-    const absoluteIndex = pageOffset + index;
-
-    const imageIndex =
-      (absoluteIndex * 7 + Math.floor(absoluteIndex / images.length) * 3) %
-      images.length;
-
-    const image = images[imageIndex];
+  const tiles = pageImages.map((image, index) => {
+    const absoluteIndex = start + index;
 
     return {
       ...image,
-      tileId: `${image.productId}-${image.id}-page-${page}-tile-${index}`,
+      tileId: `${image.productId}-${image.id}-tile-${absoluteIndex}`,
       aspect: aspectCycle[absoluteIndex % aspectCycle.length],
     };
   });
 
   return {
     tiles,
-    nextPage: page + 1 < maxPages ? page + 1 : null,
+    nextPage: end < maxItems ? page + 1 : null,
   };
 }
 
@@ -141,7 +138,7 @@ function useInfiniteSentinel({
       },
       {
         root: null,
-        rootMargin: "900px 0px",
+        rootMargin: "700px 0px",
         threshold: 0,
       }
     );
@@ -171,7 +168,7 @@ function MasonryLoadingIndicator() {
 function MasonrySkeleton() {
   return (
     <div className="columns-2 gap-2 sm:columns-3 sm:gap-3 lg:columns-4 lg:gap-4 2xl:columns-5">
-      {Array.from({ length: 16 }, (_, index) => (
+      {Array.from({ length: 10 }, (_, index) => (
         <div
           key={index}
           className={cn(
@@ -193,19 +190,27 @@ function MasonrySkeleton() {
 export function ProductMasonryGrid({
   products,
   queryKey,
-  initialPages = 2,
-  pageSize = 18,
-  maxPages = 12,
+  initialPages = 1,
+  pageSize = 10,
+  maxPages = 3,
+  loadMode = "manual",
   getHref = (tile) => `/shop/${encodeURIComponent(tile.productSlug)}`,
 }: ProductMasonryGridProps) {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteQuery({
-      queryKey: ["product-masonry", queryKey, products.map((p) => p.id).join(",")],
+      queryKey: [
+        "product-masonry",
+        queryKey,
+        pageSize,
+        maxPages,
+        products.map((product) => product.id).join(","),
+      ],
       initialPageParam: 0,
+      staleTime: 1000 * 60 * 10,
+      gcTime: 1000 * 60 * 30,
+      refetchOnWindowFocus: false,
       queryFn: async ({ pageParam }) => {
         const page = typeof pageParam === "number" ? pageParam : 0;
-
-        await new Promise((resolve) => window.setTimeout(resolve, 180));
 
         return createMasonryPage({
           products,
@@ -227,12 +232,14 @@ export function ProductMasonryGrid({
   }, [data, fetchNextPage, hasNextPage, initialPages, isFetchingNextPage]);
 
   const handleIntersect = React.useCallback(() => {
+    if (loadMode !== "infinite") return;
     if (!hasNextPage || isFetchingNextPage) return;
+
     fetchNextPage();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, loadMode]);
 
   const sentinelRef = useInfiniteSentinel({
-    enabled: Boolean(hasNextPage),
+    enabled: loadMode === "infinite" && Boolean(hasNextPage),
     onIntersect: handleIntersect,
   });
 
@@ -250,7 +257,7 @@ export function ProductMasonryGrid({
                 key={tile.tileId}
                 tile={tile}
                 href={getHref(tile)}
-                priority={index < 10}
+                priority={index < 8}
               />
             ))}
           </div>
@@ -258,7 +265,22 @@ export function ProductMasonryGrid({
 
         {isFetchingNextPage ? <MasonryLoadingIndicator /> : null}
 
-        <div ref={sentinelRef} className="h-1 w-full" />
+        {loadMode === "manual" && hasNextPage ? (
+          <div className="flex justify-center px-4 py-12">
+            <button
+              type="button"
+              disabled={isFetchingNextPage}
+              onClick={() => fetchNextPage()}
+              className="inline-flex h-12 items-center justify-center border border-black bg-white px-7 text-[11px] font-medium uppercase tracking-[0.22em] text-black transition-colors duration-300 ease-luxury hover:bg-black hover:text-white disabled:pointer-events-none disabled:opacity-45"
+            >
+              {isFetchingNextPage ? "Loading" : "Load more"}
+            </button>
+          </div>
+        ) : null}
+
+        {loadMode === "infinite" ? (
+          <div ref={sentinelRef} className="h-1 w-full" />
+        ) : null}
       </div>
     </section>
   );
@@ -273,8 +295,6 @@ function ProductMasonryCard({
   href: string;
   priority: boolean;
 }) {
-  const [loaded, setLoaded] = React.useState(false);
-
   return (
     <Link
       href={href}
@@ -288,25 +308,10 @@ function ProductMasonryCard({
           aspectClasses[tile.aspect]
         )}
       >
-        {!loaded ? (
-          <div className="absolute inset-0 z-0 animate-pulse bg-linear-to-r from-black/[0.035] via-black/[0.07] to-black/[0.035]" />
-        ) : null}
-
-        <Image
-          src={tile.src}
-          alt={tile.alt}
-          loading="eager"
-          fill
+        <ProductMasonryImage
+          key={`${tile.tileId}-${tile.src}`}
+          tile={tile}
           priority={priority}
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"
-          className={cn(
-            "object-cover transition-[opacity,transform,filter] duration-700 ease-luxury group-hover:scale-[1.045] group-hover:brightness-[0.86]",
-            loaded ? "opacity-100" : "opacity-0"
-          )}
-          style={{
-            objectPosition: tile.imagePosition ?? ("center" as CSSProperties["objectPosition"]),
-          }}
-          onLoad={() => setLoaded(true)}
         />
 
         <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors duration-500 ease-luxury group-hover:bg-black/24" />
@@ -318,5 +323,42 @@ function ProductMasonryCard({
         </div>
       </div>
     </Link>
+  );
+}
+
+function ProductMasonryImage({
+  tile,
+  priority,
+}: {
+  tile: ProductMasonryTile;
+  priority: boolean;
+}) {
+  const [loaded, setLoaded] = React.useState(false);
+
+  return (
+    <>
+      {!loaded ? (
+        <div className="absolute inset-0 z-0 animate-pulse bg-linear-to-r from-black/[0.035] via-black/[0.07] to-black/[0.035]" />
+      ) : null}
+
+      <Image
+        src={tile.src}
+        alt={tile.alt}
+        loading={priority ? "eager" : "lazy"}
+        fill
+        priority={priority}
+        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1536px) 25vw, 20vw"
+        className={cn(
+          "object-cover transition-[opacity,transform,filter] duration-700 ease-luxury group-hover:scale-[1.045] group-hover:brightness-[0.86]",
+          loaded ? "opacity-100" : "opacity-0"
+        )}
+        style={{
+          objectPosition:
+            tile.imagePosition ?? ("center" as CSSProperties["objectPosition"]),
+        }}
+        onLoad={() => setLoaded(true)}
+        onError={() => setLoaded(true)}
+      />
+    </>
   );
 }

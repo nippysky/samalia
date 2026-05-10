@@ -1,4 +1,3 @@
-// src/components/shop/ready-to-wear-filter-sheet.tsx
 "use client";
 
 import * as React from "react";
@@ -20,8 +19,11 @@ import type {
 type ReadyToWearFilterSheetProps = {
   open: boolean;
   categories: ShopCategory[];
+  categoryCounts?: Record<string, number>;
+  totalCount?: number;
   filters: ReadyToWearFilters;
   onChange: (filters: ReadyToWearFilters) => void;
+  onReset: () => void;
   onClose: () => void;
 };
 
@@ -54,8 +56,11 @@ function cn(...classes: Array<string | false | null | undefined>) {
 export function ReadyToWearFilterSheet({
   open,
   categories,
+  categoryCounts = {},
+  totalCount = 0,
   filters,
   onChange,
+  onReset,
   onClose,
 }: ReadyToWearFilterSheetProps) {
   const reducedMotion = Boolean(useReducedMotion());
@@ -94,17 +99,6 @@ export function ReadyToWearFilterSheet({
     onChange({ ...filters, ...next });
   }
 
-  function reset() {
-    onChange({
-      search: "",
-      categorySlug: READY_TO_WEAR_ALL_CATEGORY,
-      priceRange: "all",
-      tier: "all",
-      sort: "featured",
-      availableOnly: false,
-    });
-  }
-
   const sheet = (
     <AnimatePresence>
       {open ? (
@@ -127,7 +121,7 @@ export function ReadyToWearFilterSheet({
             aria-modal="true"
             aria-labelledby="ready-filter-title"
             aria-describedby="ready-filter-description"
-            className="fixed inset-y-0 right-0 z-90 w-screen border-l border-black/10 bg-white text-black shadow-none sm:w-[min(460px,calc(100vw-24px))]"
+            className="fixed inset-y-0 right-0 z-90 w-screen border-l border-black/10 bg-white text-black shadow-none sm:w-[min(500px,calc(100vw-24px))]"
             initial={reducedMotion ? false : { x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -190,27 +184,29 @@ export function ReadyToWearFilterSheet({
                 >
                   <FilterSection title="Category">
                     <div className="grid grid-cols-1 gap-2">
-                      <FilterButton
+                      <CategoryFilterButton
+                        title="All ready to wear"
+                        description="Show every available development category."
+                        count={totalCount}
                         active={
                           filters.categorySlug === READY_TO_WEAR_ALL_CATEGORY
                         }
                         onClick={() =>
                           update({ categorySlug: READY_TO_WEAR_ALL_CATEGORY })
                         }
-                      >
-                        All ready to wear
-                      </FilterButton>
+                      />
 
                       {categories.map((category) => (
-                        <FilterButton
+                        <CategoryFilterButton
                           key={category.slug}
+                          title={category.title}
+                          description={category.description}
+                          count={categoryCounts[category.slug] ?? 0}
                           active={filters.categorySlug === category.slug}
                           onClick={() =>
                             update({ categorySlug: category.slug })
                           }
-                        >
-                          {category.title}
-                        </FilterButton>
+                        />
                       ))}
                     </div>
                   </FilterSection>
@@ -303,7 +299,7 @@ export function ReadyToWearFilterSheet({
                     variant="outline"
                     size="md"
                     fullWidth
-                    onClick={reset}
+                    onClick={onReset}
                   >
                     Reset
                   </BrandButton>
@@ -346,6 +342,57 @@ function FilterSection({
 
       {children}
     </section>
+  );
+}
+
+function CategoryFilterButton({
+  active,
+  title,
+  description,
+  count,
+  onClick,
+}: {
+  active: boolean;
+  title: string;
+  description: string;
+  count: number;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "group flex min-h-22 w-full items-start justify-between gap-4 border px-4 py-4 text-left transition-colors duration-300 ease-luxury",
+        active
+          ? "border-black bg-black text-white"
+          : "border-black/10 bg-white text-black hover:border-black"
+      )}
+    >
+      <span className="min-w-0">
+        <span className="block text-[11px] font-medium uppercase tracking-[0.2em]">
+          {title}
+        </span>
+
+        <span
+          className={cn(
+            "mt-2 line-clamp-2 block text-xs leading-5 transition-colors duration-300 ease-luxury",
+            active ? "text-white/62" : "text-black/50 group-hover:text-black/62"
+          )}
+        >
+          {description}
+        </span>
+      </span>
+
+      <span
+        className={cn(
+          "mt-0.5 shrink-0 text-[10px] font-medium uppercase tracking-[0.18em]",
+          active ? "text-white/62" : "text-black/35"
+        )}
+      >
+        {count}
+      </span>
+    </button>
   );
 }
 

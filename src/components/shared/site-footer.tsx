@@ -37,7 +37,6 @@ const footerSections: FooterSection[] = [
     title: "Explore",
     links: [
       { label: "Ready to wear", href: "/ready-to-wear" },
-      { label: "Ceremonial", href: "/ceremonial-ready-to-wear" },
       { label: "Lookbook", href: "/lookbook" },
       { label: "Journal", href: "/journal" },
       { label: "The House", href: "/about" },
