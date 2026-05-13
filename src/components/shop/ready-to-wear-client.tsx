@@ -42,7 +42,6 @@ function useDebouncedValue(value: string, delay = 260) {
 const defaultFilters: ReadyToWearFilters = {
   search: "",
   categorySlug: READY_TO_WEAR_ALL_CATEGORY,
-  priceRange: "all",
   tier: "all",
   sort: "featured",
   availableOnly: false,
@@ -96,7 +95,6 @@ export function ReadyToWearClient({
         "ready-to-wear",
         resolvedFilters.search,
         resolvedFilters.categorySlug,
-        resolvedFilters.priceRange,
         resolvedFilters.tier,
         resolvedFilters.sort,
         resolvedFilters.availableOnly ? "available" : "all",
@@ -112,7 +110,6 @@ export function ReadyToWearClient({
     let count = 0;
 
     if (filters.categorySlug !== READY_TO_WEAR_ALL_CATEGORY) count += 1;
-    if (filters.priceRange !== "all") count += 1;
     if (filters.tier !== "all") count += 1;
     if (filters.availableOnly) count += 1;
 
@@ -140,13 +137,13 @@ export function ReadyToWearClient({
 
   return (
     <>
-   <section
-  className="sticky z-30 border-b border-black/10 bg-white text-black"
-  style={{
-    top: "calc(var(--nav-h, 72px) - 2px)",
-    boxShadow: "0 -12px 0 0 #fff",
-  }}
->
+      <section
+        className="sticky z-30 border-b border-black/10 bg-white text-black"
+        style={{
+          top: "calc(var(--nav-h, 72px) - 2px)",
+          boxShadow: "0 -12px 0 0 #fff",
+        }}
+      >
         <div className="mx-auto w-full max-w-440 px-4 py-5 sm:px-6 sm:py-6 lg:px-8 2xl:px-10">
           <div className="mx-auto max-w-220 text-center">
             <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-black">
@@ -268,7 +265,7 @@ function NoResultsState({ onReset }: { onReset: () => void }) {
         </p>
 
         <p className="mt-5 text-sm leading-7 text-black/55">
-          Try a different category, material, price range, or search term.
+          Try a different category, tier, availability, or search term.
         </p>
 
         <div className="mt-8 flex justify-center">

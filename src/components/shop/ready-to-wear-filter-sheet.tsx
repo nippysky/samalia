@@ -9,7 +9,6 @@ import { FiX } from "react-icons/fi";
 import { BrandButton } from "@/src/components/ui/brand-button";
 import { READY_TO_WEAR_ALL_CATEGORY } from "@/src/data/shop-categories";
 import type {
-  ProductPriceRange,
   ProductSort,
   ProductTier,
   ReadyToWearFilters,
@@ -26,14 +25,6 @@ type ReadyToWearFilterSheetProps = {
   onReset: () => void;
   onClose: () => void;
 };
-
-const priceRanges: Array<{ label: string; value: ProductPriceRange }> = [
-  { label: "All prices", value: "all" },
-  { label: "Under ₦200k", value: "under-200k" },
-  { label: "₦200k – ₦400k", value: "200k-400k" },
-  { label: "₦400k – ₦700k", value: "400k-700k" },
-  { label: "₦700k+", value: "700k-plus" },
-];
 
 const tiers: Array<{ label: string; value: ProductTier | "all" }> = [
   { label: "All tiers", value: "all" },
@@ -207,20 +198,6 @@ export function ReadyToWearFilterSheet({
                             update({ categorySlug: category.slug })
                           }
                         />
-                      ))}
-                    </div>
-                  </FilterSection>
-
-                  <FilterSection title="Price">
-                    <div className="grid grid-cols-1 gap-2">
-                      {priceRanges.map((item) => (
-                        <FilterButton
-                          key={item.value}
-                          active={filters.priceRange === item.value}
-                          onClick={() => update({ priceRange: item.value })}
-                        >
-                          {item.label}
-                        </FilterButton>
                       ))}
                     </div>
                   </FilterSection>

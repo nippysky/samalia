@@ -1,21 +1,8 @@
 import { READY_TO_WEAR_ALL_CATEGORY } from "@/src/data/shop-categories";
-import type { ProductPriceRange, ReadyToWearFilters, ShopProduct } from "@/src/lib/shop/types";
-
-function matchesPriceRange(amount: number, range: ProductPriceRange) {
-  switch (range) {
-    case "under-200k":
-      return amount < 200000;
-    case "200k-400k":
-      return amount >= 200000 && amount < 400000;
-    case "400k-700k":
-      return amount >= 400000 && amount < 700000;
-    case "700k-plus":
-      return amount >= 700000;
-    case "all":
-    default:
-      return true;
-  }
-}
+import type {
+  ReadyToWearFilters,
+  ShopProduct,
+} from "@/src/lib/shop/types";
 
 function normalize(value: string) {
   return value.trim().toLowerCase();
@@ -60,10 +47,6 @@ export function filterReadyToWearProducts(
     if (filters.availableOnly && !product.available) return false;
 
     if (filters.tier !== "all" && product.tier !== filters.tier) return false;
-
-    if (!matchesPriceRange(product.price.amount, filters.priceRange)) {
-      return false;
-    }
 
     if (search.length > 0 && !searchableText(product).includes(search)) {
       return false;

@@ -1,16 +1,8 @@
-// src/lib/shop/types.ts
 import type { CSSProperties } from "react";
 
 export type ProductTier = "house-essential" | "design-piece" | "craft-signature";
 
 export type ProductSort = "featured" | "newest" | "price-asc" | "price-desc";
-
-export type ProductPriceRange =
-  | "all"
-  | "under-200k"
-  | "200k-400k"
-  | "400k-700k"
-  | "700k-plus";
 
 export type ShopCategory = {
   slug: string;
@@ -69,7 +61,6 @@ export type ShopProduct = {
 export type ReadyToWearFilters = {
   search: string;
   categorySlug: string;
-  priceRange: ProductPriceRange;
   tier: ProductTier | "all";
   sort: ProductSort;
   availableOnly: boolean;
