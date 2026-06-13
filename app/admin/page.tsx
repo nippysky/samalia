@@ -1,4 +1,6 @@
 // app/admin/page.tsx
+export const dynamic = 'force-dynamic';
+
 import { getOrderStats } from "@/src/actions/orders";
 import { getProducts } from "@/src/actions/products";
 import { getAppointmentStats } from "@/src/actions/appointments";
@@ -9,10 +11,10 @@ import Link from "next/link";
 
 export default async function AdminDashboard() {
   const [orderStats, products, apptStats, heroSlides] = await Promise.all([
-    getOrderStats(),
-    getProducts(),
-    getAppointmentStats(),
-    getHeroSlides(),
+    getOrderStats().catch(() => ({ total: 0, pending: 0, inProduction: 0, shipped: 0, totalRevenue: 0 })),
+    getProducts().catch(() => []),
+    getAppointmentStats().catch(() => ({ total: 0, pending: 0, confirmed: 0 })),
+    getHeroSlides().catch(() => []),
   ]);
 
   const quickLinks = [
