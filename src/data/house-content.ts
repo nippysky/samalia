@@ -113,6 +113,59 @@ export const houseContent: HouseContent = {
   },
 };
 
+// ── DB helpers ────────────────────────────────────────────────────
+
+import { prisma } from "@/src/lib/prisma";
+
+const PLACEHOLDER_IMG =
+  "https://images.pexels.com/photos/9849297/pexels-photo-9849297.jpeg?auto=compress&cs=tinysrgb&w=2600";
+
+async function getDbHouseContent(): Promise<HouseContent | null> {
+  try {
+    const content = await prisma.houseContent.findFirst({
+      include: { sections: { orderBy: { order: "asc" } } },
+    });
+    if (!content) return null;
+
+    // Only replace with DB data if at least hero title is set meaningfully
+    const hasRealContent =
+      content.heroTitle !== "The House" || content.sections.length > 0;
+    if (!hasRealContent) return null;
+
+    return {
+      hero: {
+        eyebrow: "Sam'Aila",
+        title: content.heroTitle,
+        body: content.heroSubtitle ?? houseContent.hero.body,
+        image: {
+          id: "house-hero-db",
+          src: content.heroImageSrc ?? PLACEHOLDER_IMG,
+          alt: content.heroImageAlt || "Sam'Aila atelier",
+          objectPosition: "center",
+        },
+      },
+      sections: (content.sections as Array<{ id: string; subtitle: string | null; title: string; body: string; order: number }>).map((s) => ({
+        id: s.id,
+        eyebrow: s.subtitle ?? s.title,
+        title: s.title,
+        paragraphs: s.body
+          .split("\n\n")
+          .map((p: string) => p.trim())
+          .filter(Boolean),
+      })),
+      closing: {
+        eyebrow: "House direction",
+        title: content.overviewTitle ?? houseContent.closing.title,
+        body: content.overviewBody ?? houseContent.closing.body,
+        image: houseContent.closing.image,
+      },
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getHouseContent(): Promise<HouseContent> {
-  return houseContent;
+  const dbContent = await getDbHouseContent();
+  return dbContent ?? houseContent;
 }

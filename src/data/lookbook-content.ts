@@ -373,18 +373,117 @@ export const lookbookEntries: LookbookEntry[] = [
   },
 ];
 
+// ── DB helpers ────────────────────────────────────────────────────
+
+import { prisma } from "@/src/lib/prisma";
+import type { Lookbook, LookbookLook as DbLook, LookbookGalleryImage } from "@/src/generated/prisma/client";
+
+type LookbookFull = Lookbook & { looks: DbLook[]; gallery: LookbookGalleryImage[] };
+
+const PLACEHOLDER_IMG = "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=2200&q=80";
+
+function mapDbLookbook(lb: LookbookFull): LookbookEntry {
+  const coverSrc = lb.coverImageSrc ?? PLACEHOLDER_IMG;
+  const heroSrc = lb.heroImageSrc ?? coverSrc;
+
+  return {
+    id: lb.id,
+    slug: lb.slug,
+    title: lb.title,
+    season: lb.season ?? "",
+    category: "Collection",
+    year: String(new Date(lb.createdAt).getFullYear()),
+    subtitle: lb.subtitle ?? "",
+    description: lb.description ?? "",
+    featured: false,
+    heroImage: {
+      id: `${lb.id}-hero`,
+      kind: "image",
+      src: heroSrc,
+      alt: lb.heroImageAlt || lb.title,
+      objectPosition: "center",
+    },
+    coverImage: {
+      id: `${lb.id}-cover`,
+      kind: "image",
+      src: coverSrc,
+      alt: lb.coverImageAlt || lb.title,
+      objectPosition: "center",
+    },
+    statement: {
+      eyebrow: "Sam'Aila",
+      title: lb.title,
+      body: lb.description ?? "",
+    },
+    looks: (lb.looks as Array<{ id: string; title: string | null; lookNumber: string | null; description: string | null; category: string | null; imageSrc: string; imageAlt: string | null; imagePosition: string | null }>).map((look) => ({
+      id: look.id,
+      lookNumber: look.lookNumber ?? "",
+      title: look.title ?? "",
+      description: look.description ?? "",
+      category: look.category ?? "",
+      image: {
+        id: look.id,
+        kind: "image" as LookbookMediaKind,
+        src: look.imageSrc,
+        alt: look.imageAlt || look.title || "",
+        objectPosition: look.imagePosition as string,
+      },
+    })),
+    gallery: (lb.gallery as Array<{ id: string; imageSrc: string; imageAlt: string | null; imagePosition: string | null }>).map((g) => ({
+      id: g.id,
+      kind: "image" as LookbookMediaKind,
+      src: g.imageSrc,
+      alt: g.imageAlt || "",
+      objectPosition: g.imagePosition as string,
+    })),
+  };
+}
+
+async function getDbLookbooks(): Promise<LookbookEntry[] | null> {
+  try {
+    const lbs = await prisma.lookbook.findMany({
+      where: { isPublished: true },
+      include: {
+        looks: { orderBy: { order: "asc" } },
+        gallery: { orderBy: { order: "asc" } },
+      },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+    });
+    if (lbs.length === 0) return null;
+    return lbs.map(mapDbLookbook);
+  } catch {
+    return null;
+  }
+}
+
 export async function getLookbookEntries(): Promise<LookbookEntry[]> {
-  return lookbookEntries;
+  const dbEntries = await getDbLookbooks();
+  return dbEntries ?? lookbookEntries;
 }
 
 export async function getLookbookEntryBySlug(
   slug: string
 ): Promise<LookbookEntry | null> {
-  return lookbookEntries.find((entry) => entry.slug === slug) ?? null;
+  try {
+    const lb = await prisma.lookbook.findUnique({
+      where: { slug },
+      include: {
+        looks: { orderBy: { order: "asc" } },
+        gallery: { orderBy: { order: "asc" } },
+      },
+    });
+    if (lb) return mapDbLookbook(lb);
+  } catch {}
+  return lookbookEntries.find((e) => e.slug === slug) ?? null;
 }
 
-export function getLookbookSlugs() {
-  return lookbookEntries.map((entry) => ({
-    lookbookSlug: entry.slug,
-  }));
+export async function getLookbookSlugs() {
+  try {
+    const slugs = await prisma.lookbook.findMany({
+      where: { isPublished: true },
+      select: { slug: true },
+    });
+    if (slugs.length > 0) return (slugs as Array<{ slug: string }>).map((lb) => ({ lookbookSlug: lb.slug }));
+  } catch {}
+  return lookbookEntries.map((entry) => ({ lookbookSlug: entry.slug }));
 }

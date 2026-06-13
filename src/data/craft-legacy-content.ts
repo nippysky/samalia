@@ -102,6 +102,80 @@ export const craftLegacyContent: CraftLegacyContent = {
   ],
 };
 
+// ── DB helpers ────────────────────────────────────────────────────
+
+import { prisma } from "@/src/lib/prisma";
+
+const PLACEHOLDER_IMG =
+  "https://images.pexels.com/photos/9849297/pexels-photo-9849297.jpeg?auto=compress&cs=tinysrgb&w=2600";
+
+type DbEditorialImage = {
+  id: string;
+  imageSrc: string;
+  imageAlt: string | null;
+  order: number;
+};
+type DbPrinciple = {
+  id: string;
+  title: string;
+  body: string;
+  order: number;
+};
+
+async function getDbCraftContent(): Promise<CraftLegacyContent | null> {
+  try {
+    const content = await prisma.craftContent.findFirst({
+      include: {
+        editorialImages: { orderBy: { order: "asc" } },
+        principles: { orderBy: { order: "asc" } },
+      },
+    });
+    if (!content) return null;
+
+    // Only use DB data if it has been meaningfully customised
+    const hasRealContent =
+      content.introBody !== null ||
+      (content as any).editorialImages.length > 0 ||
+      (content as any).principles.length > 0;
+    if (!hasRealContent) return null;
+
+    return {
+      hero: {
+        videoSrc: craftLegacyContent.hero.videoSrc,
+        posterSrc: content.heroImageSrc ?? craftLegacyContent.hero.posterSrc,
+        eyebrow: "Sam'Aila",
+        title: content.heroTitle,
+        description: content.heroSubtitle ?? craftLegacyContent.hero.description,
+      },
+      statement: {
+        eyebrow: "Craft & Legacy",
+        title: content.introHeading ?? craftLegacyContent.statement.title,
+        largeStatement: craftLegacyContent.statement.largeStatement,
+        body: content.introBody ?? craftLegacyContent.statement.body,
+      },
+      editorialMedia: (content as any).editorialImages.length > 0
+        ? (content as any).editorialImages.map((img: DbEditorialImage): CraftLegacyEditorialMedia => ({
+            id: img.id,
+            kind: "image",
+            src: img.imageSrc || PLACEHOLDER_IMG,
+            alt: img.imageAlt || "Sam'Aila craft detail",
+            objectPosition: "center",
+          }))
+        : craftLegacyContent.editorialMedia,
+      principles: (content as any).principles.length > 0
+        ? (content as any).principles.map((p: DbPrinciple): CraftLegacyPrinciple => ({
+            id: p.id,
+            title: p.title,
+            text: p.body,
+          }))
+        : craftLegacyContent.principles,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function getCraftLegacyContent(): Promise<CraftLegacyContent> {
-  return craftLegacyContent;
+  const dbContent = await getDbCraftContent();
+  return dbContent ?? craftLegacyContent;
 }

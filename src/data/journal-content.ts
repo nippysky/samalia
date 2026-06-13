@@ -340,20 +340,124 @@ export const journalArticles: JournalArticle[] = [
   },
 ];
 
+// ── DB helpers ────────────────────────────────────────────────────
+
+import { prisma } from "@/src/lib/prisma";
+import type {
+  JournalArticle as DbArticle,
+  JournalBlock,
+  JournalGalleryImage,
+} from "@/src/generated/prisma/client";
+
+type ArticleFull = DbArticle & {
+  blocks: JournalBlock[];
+  gallery: JournalGalleryImage[];
+};
+
+const PLACEHOLDER_IMG =
+  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=2200&q=80";
+
+function mapDbBlock(block: JournalBlock): JournalContentBlock {
+  switch (block.type) {
+    case "HEADING":
+      return { id: block.id, type: "heading", text: block.content ?? "" };
+    case "QUOTE":
+      return { id: block.id, type: "quote", text: block.content ?? "" };
+    case "IMAGE":
+      return {
+        id: block.id,
+        type: "image",
+        image: {
+          id: block.id,
+          kind: "image",
+          src: block.imageSrc ?? PLACEHOLDER_IMG,
+          alt: block.imageAlt ?? "",
+          objectPosition: "center",
+        },
+      };
+    default:
+      return { id: block.id, type: "paragraph", text: block.content ?? "" };
+  }
+}
+
+function mapDbArticle(a: ArticleFull): JournalArticle {
+  const heroSrc = a.coverImageSrc ?? PLACEHOLDER_IMG;
+  return {
+    id: a.id,
+    slug: a.slug,
+    title: a.title,
+    subtitle: a.subtitle ?? "",
+    category: a.category ?? "House Notes",
+    publishedAt: (a.publishedAt ?? a.createdAt).toISOString().split("T")[0],
+    readTime: "4 min read",
+    featured: false,
+    heroImage: {
+      id: `${a.id}-hero`,
+      kind: "image",
+      src: heroSrc,
+      alt: a.coverImageAlt || a.title,
+      objectPosition: "center",
+    },
+    excerpt: a.excerpt ?? "",
+    author: a.author ?? "Sam'Aila Studio",
+    blocks: a.blocks.map(mapDbBlock),
+    gallery: (a.gallery as Array<{ id: string; imageSrc: string; imageAlt: string | null }>).map((g) => ({
+      id: g.id,
+      kind: "image" as JournalMediaKind,
+      src: g.imageSrc,
+      alt: g.imageAlt || "",
+      objectPosition: "center",
+    })),
+  };
+}
+
+async function getDbArticles(): Promise<JournalArticle[] | null> {
+  try {
+    const articles = await prisma.journalArticle.findMany({
+      where: { published: true },
+      include: {
+        blocks: { orderBy: { order: "asc" } },
+        gallery: { orderBy: { order: "asc" } },
+      },
+      orderBy: { publishedAt: "desc" },
+    });
+    if (articles.length === 0) return null;
+    return articles.map(mapDbArticle);
+  } catch {
+    return null;
+  }
+}
+
 export async function getJournalArticles(): Promise<JournalArticle[]> {
-  return journalArticles;
+  const dbArticles = await getDbArticles();
+  return dbArticles ?? journalArticles;
 }
 
 export async function getJournalArticleBySlug(
   slug: string
 ): Promise<JournalArticle | null> {
-  return journalArticles.find((article) => article.slug === slug) ?? null;
+  try {
+    const a = await prisma.journalArticle.findUnique({
+      where: { slug },
+      include: {
+        blocks: { orderBy: { order: "asc" } },
+        gallery: { orderBy: { order: "asc" } },
+      },
+    });
+    if (a) return mapDbArticle(a);
+  } catch {}
+  return journalArticles.find((a) => a.slug === slug) ?? null;
 }
 
-export function getJournalArticleSlugs() {
-  return journalArticles.map((article) => ({
-    journalSlug: article.slug,
-  }));
+export async function getJournalArticleSlugs() {
+  try {
+    const slugs = await prisma.journalArticle.findMany({
+      where: { published: true },
+      select: { slug: true },
+    });
+    if (slugs.length > 0) return (slugs as Array<{ slug: string }>).map((a) => ({ journalSlug: a.slug }));
+  } catch {}
+  return journalArticles.map((a) => ({ journalSlug: a.slug }));
 }
 
 export function formatJournalDate(date: string) {

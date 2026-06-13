@@ -610,26 +610,116 @@ export const readyToWearProducts: ShopProduct[] = [
   },
 ];
 
+// ── DB helpers ────────────────────────────────────────────────────
+
+import { prisma } from "@/src/lib/prisma";
+import type { Product, ProductImage, ProductVariant } from "@/src/generated/prisma/client";
+
+type ProductFull = Product & { images: ProductImage[]; variants: ProductVariant[] };
+
+type DbVariant = { size: string | null; color: string | null; stock: number; isAvailable: boolean };
+type DbProductImage = { id: string; src: string; alt: string; imagePosition: string | null };
+
+function mapDbProduct(p: ProductFull): ShopProduct {
+  const variants = p.variants as unknown as DbVariant[];
+  const images = p.images as unknown as DbProductImage[];
+
+  const sizes = [...new Set(variants.map((v) => v.size).filter(Boolean) as string[])];
+  const colors = [...new Set(variants.map((v) => v.color).filter(Boolean) as string[])];
+  const availableSizes = variants
+    .filter((v) => v.stock > 0 && v.isAvailable)
+    .map((v) => v.size)
+    .filter(Boolean) as string[];
+
+  return {
+    id: p.id,
+    slug: p.slug,
+    name: p.name,
+    categorySlug: p.categorySlug,
+    productionCategory: p.categorySlug,
+    productType: p.categorySlug,
+    tier: (p.tier as string) === "BESPOKE" ? "craft-signature" : (p.tier as string) === "MADE_TO_ORDER" ? "design-piece" : "house-essential",
+    description: p.description ?? "",
+    detailBullets: [],
+    fitNote: "",
+    careInstructions: p.careInstructions ? [p.careInstructions] : [],
+    madeIn: "Nigeria",
+    sku: p.sku,
+    deliveryNote: "",
+    price: {
+      amount: (p.priceKobo as number) / 100,
+      currency: "NGN",
+      display: `₦${((p.priceKobo as number) / 100).toLocaleString("en-NG")}`,
+    },
+    images: images.map((img) => ({
+      id: img.id,
+      src: img.src,
+      alt: img.alt,
+      imagePosition: img.imagePosition as string,
+    })),
+    colors,
+    sizes,
+    availableSizes,
+    materials: p.material ? [p.material] : [],
+    tags: p.tags,
+    available: p.available,
+    featured: p.featured,
+    createdAt: p.createdAt.toISOString(),
+  };
+}
+
+async function getDbProducts(): Promise<ShopProduct[] | null> {
+  try {
+    const products = await prisma.product.findMany({
+      where: { available: true },
+      include: {
+        images: { orderBy: { order: "asc" } },
+        variants: { orderBy: [{ size: "asc" }, { color: "asc" }] },
+      },
+      orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+    });
+    if (products.length === 0) return null;
+    return products.map(mapDbProduct);
+  } catch {
+    return null;
+  }
+}
+
 export async function getReadyToWearProducts(): Promise<ShopProduct[]> {
-  return readyToWearProducts;
+  const dbProducts = await getDbProducts();
+  return dbProducts ?? readyToWearProducts;
 }
 
 export async function getReadyToWearProductsByCategory(
   categorySlug: string
 ): Promise<ShopProduct[]> {
-  return readyToWearProducts.filter(
-    (product) => product.categorySlug === categorySlug
-  );
+  const all = await getReadyToWearProducts();
+  return all.filter((p) => p.categorySlug === categorySlug);
 }
 
 export async function getReadyToWearProductBySlug(
   productSlug: string
 ): Promise<ShopProduct | null> {
-  return readyToWearProducts.find((product) => product.slug === productSlug) ?? null;
+  try {
+    const p = await prisma.product.findUnique({
+      where: { slug: productSlug },
+      include: {
+        images: { orderBy: { order: "asc" } },
+        variants: { orderBy: [{ size: "asc" }, { color: "asc" }] },
+      },
+    });
+    if (p) return mapDbProduct(p);
+  } catch {}
+  return readyToWearProducts.find((p) => p.slug === productSlug) ?? null;
 }
 
 export async function getReadyToWearProductSlugs() {
-  return readyToWearProducts.map((product) => ({
-    productSlug: product.slug,
-  }));
+  try {
+    const slugs = await prisma.product.findMany({
+      where: { available: true },
+      select: { slug: true },
+    });
+    if (slugs.length > 0) return (slugs as Array<{ slug: string }>).map((p) => ({ productSlug: p.slug }));
+  } catch {}
+  return readyToWearProducts.map((p) => ({ productSlug: p.slug }));
 }
