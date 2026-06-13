@@ -3,6 +3,7 @@
 // These are never in the client bundle; they render into the initial HTML
 // only in development (empty strings in production).
 
+import { Suspense } from "react";
 import Image from "next/image";
 import { LoginForm } from "@/src/components/admin/login-form";
 
@@ -39,10 +40,12 @@ export default function AdminLoginPage() {
 
         {/* Form card */}
         <div className="bg-white border border-gray-100 shadow-sm p-8 w-full">
-          <LoginForm
-            defaultEmail={defaultEmail}
-            defaultPassword={defaultPassword}
-          />
+          <Suspense fallback={null}>
+            <LoginForm
+              defaultEmail={defaultEmail}
+              defaultPassword={defaultPassword}
+            />
+          </Suspense>
         </div>
 
         {/* Dev mode indicator — never shows in production */}

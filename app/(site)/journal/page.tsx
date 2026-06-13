@@ -1,4 +1,6 @@
 // app/journal/page.tsx
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 
 import { JournalIndex } from "@/src/components/journal/journal-index";

@@ -1,4 +1,6 @@
 // app/lookbook/page.tsx
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 
 import { LookbookIndex } from "@/src/components/lookbook/lookbook-index";

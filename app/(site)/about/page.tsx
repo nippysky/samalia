@@ -1,4 +1,6 @@
 // app/about/page.tsx
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 
 import { TheHousePage } from "@/src/components/about/the-house-page";

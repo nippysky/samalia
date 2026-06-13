@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 
 import { ReadyToWearClient } from "@/src/components/shop/ready-to-wear-client";

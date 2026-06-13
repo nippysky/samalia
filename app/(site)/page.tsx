@@ -1,4 +1,6 @@
 // app/page.tsx
+export const dynamic = 'force-dynamic';
+
 import {
   HomeFeatureLinks,
   type HomeFeatureLink,

@@ -1,4 +1,6 @@
 // app/craft-legacy/page.tsx
+export const dynamic = 'force-dynamic';
+
 import type { Metadata } from "next";
 
 import { CraftLegacyPage } from "@/src/components/craft/craft-legacy-page";
